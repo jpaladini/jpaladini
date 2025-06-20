@@ -1,411 +1,472 @@
 ---
-// Get environment variables on the server side
-const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+// Homepage - Professional Resume
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JP Paladini - Login</title>
-    <meta name="description" content="Personal website and portfolio of JP Paladini" />
+    <title>JP Paladini - Software Engineer</title>
+    <meta name="description" content="Professional software engineer specializing in full-stack development, AI/ML, and modern web technologies" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#3B82F6'
+            }
+          }
+        }
+      }
+    </script>
   </head>
   
   <body class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <div class="flex items-center justify-center min-h-screen py-2 sm:py-4 lg:py-8 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md w-full space-y-3 sm:space-y-4 lg:space-y-6">
+    <!-- Theme Toggle -->
+    <div class="absolute top-4 right-4 z-10">
+      <button 
+        id="themeToggle" 
+        class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md border dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+        aria-label="Toggle theme"
+      >
+        <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+      </button>
+    </div>
+
+    <!-- Gear Menu Dropdown -->
+    <div class="absolute top-4 left-4 z-20">
+      <div class="relative">
+        <button 
+          id="gearMenu" 
+          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md border dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+          aria-label="Menu"
+        >
+          ⚙️
+        </button>
         
-        <!-- Logo -->
-        <div class="text-center flex-shrink-0">
-          <!-- Dynamic logo for light/dark mode -->
-          <img 
-            src="/jp_black.webp" 
-            alt="JP Logo" 
-            class="mx-auto h-10 sm:h-12 lg:h-16 w-auto dark:hidden border-0 outline-none" 
-            style="border: none; outline: none;"
-          />
-          <img 
-            src="/jp_white.webp" 
-            alt="JP Logo" 
-            class="mx-auto h-10 sm:h-12 lg:h-16 w-auto hidden dark:block border-0 outline-none" 
-            style="border: none; outline: none;"
-          />
-          <h2 class="mt-3 sm:mt-4 lg:mt-6 text-center text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Welcome Back
-          </h2>
-          <p class="mt-1 sm:mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Sign in to your account
-          </p>
-        </div>
-
-        <!-- Authentication Forms -->
-        <div class="bg-white dark:bg-gray-800 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 shadow-xl rounded-lg border dark:border-gray-700 flex-shrink">
-          
-          <!-- Toggle between Sign In and Sign Up -->
-          <div class="flex mb-6 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            <button 
-              id="signinTab" 
-              class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+        <!-- Dropdown Menu -->
+        <div 
+          id="gearDropdown" 
+          class="hidden absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border dark:border-gray-700"
+        >
+          <div class="py-1" role="menu">
+            <!-- Login Option (shown when not authenticated) -->
+            <a 
+              id="loginOption" 
+              href="/login" 
+              class="hidden block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+              role="menuitem"
             >
-              Sign In
-            </button>
-            <button 
-              id="signupTab" 
-              class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300"
-            >
-              Sign Up
-            </button>
-          </div>
-
-          <!-- Sign In Form -->
-          <form id="signinForm" class="space-y-4">
-            <div>
-              <label for="signin-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email address
-              </label>
-              <input 
-                id="signin-email" 
-                name="email" 
-                type="email" 
-                required 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter your email"
-              />
-            </div>
+              🔐 Login
+            </a>
             
-            <div>
-              <label for="signin-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
-              <input 
-                id="signin-password" 
-                name="password" 
-                type="password" 
-                required 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter your password"
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              id="signinButton"
-              class="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            <!-- Authenticated Options (shown when logged in) -->
+            <a 
+              id="dashboardOption" 
+              href="/dashboard" 
+              class="hidden block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+              role="menuitem"
             >
-              <span id="signinText">Sign In</span>
-              <div id="signinSpinner" class="hidden ml-2">
-                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            </button>
-          </form>
-
-          <!-- Sign Up Form -->
-          <form id="signupForm" class="space-y-4 hidden">
-            <div>
-              <label for="signup-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email address
-              </label>
-              <input 
-                id="signup-email" 
-                name="email" 
-                type="email" 
-                required 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter your email"
-              />
-            </div>
-            
-            <div>
-              <label for="signup-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
-              <input 
-                id="signup-password" 
-                name="password" 
-                type="password" 
-                required 
-                minlength="6"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Create a password (min 6 chars)"
-              />
-            </div>
-
+              📊 Dashboard
+            </a>
             <button 
-              type="submit" 
-              id="signupButton"
-              class="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              id="logoutOption" 
+              class="hidden w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+              role="menuitem"
             >
-              <span id="signupText">Sign Up</span>
-              <div id="signupSpinner" class="hidden ml-2">
-                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              </div>
+              🚪 Logout
             </button>
-          </form>
-
-          <!-- Divider -->
-          <div class="mt-6">
-            <div class="relative">
-              <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
-              </div>
-              <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
-              </div>
-            </div>
           </div>
-
-          <!-- Google OAuth Button -->
-          <button 
-            id="googleButton"
-            class="mt-4 w-full flex justify-center items-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-          >
-            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-          </button>
-
-          <!-- GitHub OAuth Button -->
-          <button 
-            id="githubButton"
-            class="mt-3 w-full flex justify-center items-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-          >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            Continue with GitHub
-          </button>
-
-          <!-- Error Message -->
-          <div id="errorMessage" class="hidden mt-4 p-3 rounded-md bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800">
-            <p class="text-sm text-red-700 dark:text-red-200"></p>
-          </div>
-
-          <!-- Success Message -->
-          <div id="successMessage" class="hidden mt-4 p-3 rounded-md bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800">
-            <p class="text-sm text-green-700 dark:text-green-200"></p>
-          </div>
-        </div>
-
-        <!-- Theme Toggle -->
-        <div class="text-center">
-          <button 
-            id="themeToggle"
-            class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-          >
-            <span id="themeIcon">🌙</span>
-            <span class="ml-2" id="themeText">Dark Mode</span>
-          </button>
         </div>
       </div>
     </div>
 
-    <!-- Supabase Client -->
-    <script type="module" define:vars={{ SUPABASE_URL, SUPABASE_ANON_KEY }}>
-      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-      
-      // Use server-passed variables
-      const supabaseUrl = SUPABASE_URL
-      const supabaseKey = SUPABASE_ANON_KEY
-      
-      console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing')
-      console.log('Supabase Key:', supabaseKey ? 'Set' : 'Missing')
-      
-      // Initialize Supabase client
-      const supabase = createClient(supabaseUrl, supabaseKey)
-      
-      // DOM Elements
-      const signinTab = document.getElementById('signinTab')
-      const signupTab = document.getElementById('signupTab')
-      const signinForm = document.getElementById('signinForm')
-      const signupForm = document.getElementById('signupForm')
-      const googleButton = document.getElementById('googleButton')
-      const githubButton = document.getElementById('githubButton')
-      const themeToggle = document.getElementById('themeToggle')
-      const errorMessage = document.getElementById('errorMessage')
-      const successMessage = document.getElementById('successMessage')
-      
-      // Tab switching
-      signinTab.addEventListener('click', () => {
-        signinTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-        signupTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
-        signinForm.classList.remove('hidden')
-        signupForm.classList.add('hidden')
-        hideMessages()
-      })
-      
-      signupTab.addEventListener('click', () => {
-        signupTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-        signinTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
-        signupForm.classList.remove('hidden')
-        signinForm.classList.add('hidden')
-        hideMessages()
-      })
-      
-      // Form submissions
-      signinForm.addEventListener('submit', async (e) => {
-        e.preventDefault()
-        const email = document.getElementById('signin-email').value
-        const password = document.getElementById('signin-password').value
+    <div class="flex items-center justify-center min-h-screen py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl w-full space-y-4 sm:space-y-6 lg:space-y-8">
         
-        showLoading('signin')
-        hideMessages()
-        
-        try {
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-          })
+        <!-- Hero Section -->
+        <section class="text-center mb-12">
+          <div class="flex justify-center mb-6">
+            <img 
+              src="/jp_black.webp" 
+              alt="Profile Photo" 
+              class="w-20 h-20 rounded-full object-cover dark:hidden"
+            />
+            <img 
+              src="/jp_white.webp" 
+              alt="Profile Photo" 
+              class="w-20 h-20 rounded-full object-cover hidden dark:block"
+            />
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Jason Paladini
+          </h1>
+          <p class="text-xl text-blue-600 dark:text-blue-400 mb-6">
+            Data Engineer & Analytics Lead
+          </p>
+          <div class="flex flex-wrap justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <span>📍 Newark, NJ</span>
+            <span class="hidden sm:inline">•</span>
+            <a href="mailto:jason@jpaladini.com" class="hover:text-blue-600 dark:hover:text-blue-400">
+              📧 jason@jpaladini.com
+            </a>
+            <span class="hidden sm:inline">•</span>
+            <a href="https://linkedin.com/in/jpaladini" class="hover:text-blue-600 dark:hover:text-blue-400" target="_blank">
+              💼 LinkedIn
+            </a>
+          </div>
+        </section>
+
+        <!-- Professional Experience -->
+        <section class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Professional Experience</h2>
           
-          if (error) throw error
-          
-          showSuccess('Sign in successful! Redirecting...')
-          setTimeout(() => {
-            window.location.href = '/dashboard'
-          }, 1000)
-          
-        } catch (error) {
-          showError(error.message)
-        } finally {
-          hideLoading('signin')
-        }
-      })
+          <!-- Current Position -->
+          <div class="mb-8">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Business Systems Analyst</h3>
+                <p class="text-lg text-blue-600 dark:text-blue-400 font-medium">Horizon Blue Cross Blue Shield of New Jersey</p>
+              </div>
+              <div class="mt-2 md:mt-0 md:text-right">
+                <p class="font-medium">Nov 2017 – Present · 7 yrs 8 mos</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Newark, NJ</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+              <li>• Responsible for conducting research and root cause analysis for customers with the goal of recommending and implementing new processes and solutions to operational deficiencies</li>
+              <li>• Resolve issues and improve operational performance on a cross-functional/departmental basis</li>
+              <li>• Lead data engineering initiatives for enterprise reporting, managing ETL processes and data integration from multiple sources including SharePoint and ncompass</li>
+              <li>• Design and maintain robust data architecture including data warehousing, mirroring, and database relations/views</li>
+              <li>• Implement DevOps, CICD, and Agile methodologies using Azure DevOps for work item management and build pipelines</li>
+              <li>• Develop and maintain automated data pipelines using Python, SQL, and SSIS for data extraction, transformation, and loading</li>
+              <li>• Create and manage Tableau dashboards and reports that provide critical business insights</li>
+              <li>• Utilize AI tools and automation to streamline workflows and enhance productivity</li>
+              <li>• Maintain and troubleshoot SharePoint integrations and database connections</li>
+              <li>• Track and document database schema changes and their impact on system capacity</li>
+              <li>• Apply diverse management methodologies including Lean Six Sigma, lead time, and cycle time to optimize processes</li>
+            </ul>
+          </div>
+
+          <!-- Freelance Work -->
+          <div class="mb-8">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Freelance Computer Technician / Web Designer</h3>
+                <p class="text-lg text-blue-600 dark:text-blue-400 font-medium">Freelance</p>
+              </div>
+              <div class="mt-2 md:mt-0 md:text-right">
+                <p class="font-medium">Jan 2009 – Present · 16 yrs 6 mos</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+              <li>• Provided Hardware and Software troubleshooting of customer systems</li>
+              <li>• Designed and implemented custom websites using <strong>Django/Flask | Shiny | Bootstrap/WordPress</strong> tools</li>
+              <li>• Performed cleaning, munging, and other programming tasks as needed on a freelance basis</li>
+            </ul>
+          </div>
+
+          <!-- Military Service -->
+          <div>
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Corporal, Marine Aircraft Logistics Squadron 16</h3>
+                <p class="text-lg text-blue-600 dark:text-blue-400 font-medium">US Marine Corps</p>
+              </div>
+              <div class="mt-2 md:mt-0 md:text-right">
+                <p class="font-medium">Sep 2004 – Dec 2008 · 4 yrs 4 mos</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">San Diego County, CA</p>
+              </div>
+            </div>
+            <ul class="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+              <li>• Provided financial, material, and inventory management support to satisfy customer requirements on a timely basis</li>
+              <li>• Responsible for setting appropriate inventory levels based on demand</li>
+              <li>• Followed up directly with suppliers in order to track status of off-site high priority requisitions</li>
+              <li>• Ensured warehouse operated within budget constraints by investigating losses caused by inventory discrepancies</li>
+              <li>• Implemented and managed multiple satellite inventories in order to expedite the delivery of high demand items</li>
+              <li>• Coordinated and supervised inventory counts of over <strong>12,000 line items</strong></li>
+              <li>• Responsible for the training, scheduling, and day-to-day supervision of a team of over <strong>25 individuals</strong></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Key Strengths -->
+        <section class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Key Strengths</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Data Architecture Expertise</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Deep understanding of data architecture, ETL processes, and the ability to design effective database relations and views</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Process Automation</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Strong capability in automating workflows and implementing efficient data sharing solutions</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">System Resilience</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Engineers data systems capable of withstanding upstream changes and adapting to modifications</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Standardization</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Advocates for and implements data standardization practices essential for data engineering and analysis</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Technical Adaptability</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Quickly researches and implements solutions using various technical stacks and architectures</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Problem-Solving</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Excels at breaking down complex problems and developing comprehensive solutions</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Communication</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Very effective at explaining technical concepts and documenting processes</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Professional Achievements -->
+        <section class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Professional Achievements</h2>
+          <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+            <li class="flex items-start">
+              <span class="text-purple-600 dark:text-purple-400 mr-2">🏆</span>
+              <span class="text-sm">Successfully migrated ticketing and work item management from ServiceNow to Azure DevOps</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-purple-600 dark:text-purple-400 mr-2">🤖</span>
+              <span class="text-sm">Designed and implemented a large-scale AI-driven orchestration system serving as a foundational platform for team analytics</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-purple-600 dark:text-purple-400 mr-2">🔗</span>
+              <span class="text-sm">Developed a comprehensive system for tracking and linking code changes, database schema modifications, and deployment artifacts</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-purple-600 dark:text-purple-400 mr-2">🚀</span>
+              <span class="text-sm">Created automated deployment pipelines that manage different software environments while ensuring data integrity</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-purple-600 dark:text-purple-400 mr-2">🐍</span>
+              <span class="text-sm">Implemented Python solutions to generate and manage metadata for database tables, enabling comprehensive tracking of changes</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Key Projects -->
+        <section class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Key Projects</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Data Lineage Dashboard</h3>
+              <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Django + D3.js visualization tracking data flow across enterprise systems, improving transparency and debugging capabilities.</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Django</span>
+                <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded">D3.js</span>
+                <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">REST API</span>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Platform Helpers Package</h3>
+              <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Python package for SSIS job execution, SQL Agent polling, and lineage logging, published to Azure Artifacts for team-wide adoption.</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Python</span>
+                <span class="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-xs rounded">SSIS</span>
+                <span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-xs rounded">Azure</span>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">FFXI AI Application</h3>
+              <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Machine learning application using OCR and classification models for game automation, featuring real-time decision-making algorithms.</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded">Machine Learning</span>
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">OCR</span>
+                <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">Python</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Education -->
+        <section class="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Education & Certifications</h2>
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Bachelor's Degree in Computational Biology</h3>
+              <p class="text-blue-600 dark:text-blue-400 font-medium">Stony Brook University</p>
+              <p class="text-sm text-gray-700 dark:text-gray-300">Specialized education that provided strong foundation for programming and data analysis career</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <h4 class="font-semibold text-gray-900 dark:text-white">Continuous Learning</h4>
+                <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                  <li>• DataCamp Data Engineering Track</li>
+                  <li>• Coursera Machine Learning Specialization</li>
+                  <li>• Microsoft Azure Certifications</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Technical Stack -->
+        <section class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Technical Skills</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Programming & Scripting</h3>
+              <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <li>• SQL (Expert Level)</li>
+                <li>• Python</li>
+                <li>• C#</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Data & Analytics</h3>
+              <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <li>• Tableau</li>
+                <li>• Power BI</li>
+                <li>• ETL Processes</li>
+                <li>• Data Warehousing</li>
+                <li>• Database Design</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Cloud & DevOps</h3>
+              <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <li>• Azure DevOps</li>
+                <li>• Microsoft 365</li>
+                <li>• SharePoint</li>
+                <li>• Git</li>
+                <li>• YAML</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">AI & Automation</h3>
+              <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <li>• AI Orchestration</li>
+                <li>• Power Automate</li>
+                <li>• Copilot</li>
+                <li>• Process Automation</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mt-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Project Management</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">Agile Methodologies</span>
+              <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-sm rounded-full">Lean Six Sigma</span>
+              <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-sm rounded-full">Process Improvement</span>
+              <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-sm rounded-full">Workflow Engineering</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Theme Toggle Script (same as auth page) -->
+    <script>
+      // Theme toggle functionality matching auth page
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
       
-      signupForm.addEventListener('submit', async (e) => {
-        e.preventDefault()
-        const email = document.getElementById('signup-email').value
-        const password = document.getElementById('signup-password').value
-        
-        showLoading('signup')
-        hideMessages()
-        
-        try {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password
-          })
-          
-          if (error) throw error
-          
-          showSuccess('Account created successfully! You can now sign in.')
-          // Switch to sign in tab
-          signinTab.click()
-          
-        } catch (error) {
-          showError(error.message)
-        } finally {
-          hideLoading('signup')
-        }
-      })
+      // Check for saved theme preference or default to 'light'
+      const currentTheme = localStorage.getItem('theme') || 'light';
       
-      // Google OAuth
-      googleButton.addEventListener('click', async () => {
-        try {
-          const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-              redirectTo: `${window.location.origin}/dashboard`
-            }
-          })
-          
-          if (error) throw error
-          
-        } catch (error) {
-          showError(error.message)
-        }
-      })
+      if (currentTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light Mode';
+      }
       
-      // GitHub OAuth
-      githubButton.addEventListener('click', async () => {
-        try {
-          const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'github',
-            options: {
-              redirectTo: `${window.location.origin}/dashboard`
-            }
-          })
-          
-          if (error) throw error
-          
-        } catch (error) {
-          showError(error.message)
-        }
-      })
-      
-      // Theme toggle
       themeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark')
+        document.documentElement.classList.toggle('dark');
         
-        if (isDark) {
-          document.documentElement.classList.remove('dark')
-          document.getElementById('themeIcon').textContent = '🌙'
-          document.getElementById('themeText').textContent = 'Dark Mode'
-          localStorage.setItem('theme', 'light')
+        if (document.documentElement.classList.contains('dark')) {
+          localStorage.setItem('theme', 'dark');
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light Mode';
         } else {
-          document.documentElement.classList.add('dark')
-          document.getElementById('themeIcon').textContent = '☀️'
-          document.getElementById('themeText').textContent = 'Light Mode'
-          localStorage.setItem('theme', 'dark')
+          localStorage.setItem('theme', 'light');
+          themeIcon.textContent = '🌙';
+          themeText.textContent = 'Dark Mode';
         }
-      })
+      });
+
+      // Gear menu dropdown functionality
+      const gearMenu = document.getElementById('gearMenu');
+      const gearDropdown = document.getElementById('gearDropdown');
       
-      // Initialize theme
-      const savedTheme = localStorage.getItem('theme')
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.documentElement.classList.add('dark')
-        document.getElementById('themeIcon').textContent = '☀️'
-        document.getElementById('themeText').textContent = 'Light Mode'
-      }
-      
-      // Helper functions
-      function showLoading(type) {
-        const button = document.getElementById(`${type}Button`)
-        const text = document.getElementById(`${type}Text`)
-        const spinner = document.getElementById(`${type}Spinner`)
+      if (gearMenu && gearDropdown) {
+        gearMenu.addEventListener('click', () => {
+          gearDropdown.classList.toggle('hidden');
+        });
         
-        button.disabled = true
-        text.textContent = type === 'signin' ? 'Signing In...' : 'Creating Account...'
-        spinner.classList.remove('hidden')
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+          if (gearMenu && gearDropdown && event.target instanceof Node && !gearMenu.contains(event.target) && !gearDropdown.contains(event.target)) {
+            gearDropdown.classList.add('hidden');
+          }
+        });
       }
+    </script>
+
+    <!-- Supabase Auth State Management -->
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
       
-      function hideLoading(type) {
-        const button = document.getElementById(`${type}Button`)
-        const text = document.getElementById(`${type}Text`)
-        const spinner = document.getElementById(`${type}Spinner`)
+      const supabaseUrl = 'https://zfthlqpfqpwzzqhidhpl.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmdGhscXBmcXB3enpxaGlkaHBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3MjQ0NzAsImV4cCI6MjA1MDMwMDQ3MH0.g93s6QjDIQYHMIBJcKhrlPsKNaXj_4F6VtUGKlhiGaQ';
+      
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+      // Get menu elements
+      const loginOption = document.getElementById('loginOption');
+      const dashboardOption = document.getElementById('dashboardOption');
+      const logoutOption = document.getElementById('logoutOption');
+
+      // Check auth state and update menu
+      async function updateGearMenu() {
+        const { data: { user } } = await supabase.auth.getUser();
         
-        button.disabled = false
-        text.textContent = type === 'signin' ? 'Sign In' : 'Sign Up'
-        spinner.classList.add('hidden')
+        if (user) {
+          // User is authenticated - show dashboard and logout
+          loginOption.classList.add('hidden');
+          dashboardOption.classList.remove('hidden');
+          logoutOption.classList.remove('hidden');
+        } else {
+          // User is not authenticated - show login only
+          loginOption.classList.remove('hidden');
+          dashboardOption.classList.add('hidden');
+          logoutOption.classList.add('hidden');
+        }
       }
-      
-      function showError(message) {
-        errorMessage.classList.remove('hidden')
-        errorMessage.querySelector('p').textContent = message
+
+      // Handle logout
+      if (logoutOption) {
+        logoutOption.addEventListener('click', async () => {
+          await supabase.auth.signOut();
+          // Refresh the menu after logout
+          updateGearMenu();
+          // Close dropdown
+          document.getElementById('gearDropdown').classList.add('hidden');
+        });
       }
-      
-      function showSuccess(message) {
-        successMessage.classList.remove('hidden')
-        successMessage.querySelector('p').textContent = message
-      }
-      
-      function hideMessages() {
-        errorMessage.classList.add('hidden')
-        successMessage.classList.add('hidden')
-      }
-      
-      // Check if user is already authenticated
+
+      // Listen for auth state changes
       supabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-          window.location.href = '/dashboard'
-        }
-      })
+        updateGearMenu();
+      });
+
+      // Initial menu update
+      updateGearMenu();
     </script>
   </body>
 </html>
