@@ -12,24 +12,33 @@
   </head>
 
   <body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 min-h-screen">
-    <main class="max-w-2xl mx-auto px-6 py-16 sm:py-24">
+    <!-- Top banner -->
+    <nav class="w-full py-3 border-b border-gray-100 dark:border-gray-800">
+      <div class="max-w-4xl mx-auto px-6 flex items-center justify-between">
+      <a href="/" class="h-8 w-fit overflow-hidden dark:hidden">
+        <img
+          src="/jp_black.webp"
+          alt="JP"
+          class="h-9 w-auto -mt-0.5 -ml-0.5 border-0 outline-none"
+        />
+      </a>
+      <a href="/" class="h-8 w-fit overflow-hidden hidden dark:block">
+        <img
+          src="/jp_white.webp"
+          alt="JP"
+          class="h-9 w-auto -mt-0.5 -ml-0.5 border-0 outline-none"
+        />
+      </a>
+      <a href="/projects" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+        Projects
+      </a>
+      </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-6 py-12 sm:py-16">
 
       <!-- Header -->
       <header class="mb-12">
-        <div class="h-12 w-fit mb-6 overflow-hidden dark:hidden">
-          <img
-            src="/jp_black.webp"
-            alt="JP"
-            class="h-14 w-auto -mt-1 -ml-1 border-0 outline-none"
-          />
-        </div>
-        <div class="h-12 w-fit mb-6 overflow-hidden hidden dark:block">
-          <img
-            src="/jp_white.webp"
-            alt="JP"
-            class="h-14 w-auto -mt-1 -ml-1 border-0 outline-none"
-          />
-        </div>
         <h1 class="text-3xl sm:text-4xl font-bold mb-2">Jason Paladini</h1>
         <p class="text-lg text-gray-600 dark:text-gray-400">Principal Data Engineer</p>
       </header>
