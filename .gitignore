@@ -31,11 +31,8 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+# Claude Code
+.claude/
 
 # OS generated files
 .DS_Store
