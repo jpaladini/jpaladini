@@ -1,0 +1,44 @@
+---
+// OAuth callback handler
+// This page handles the redirect after OAuth authentication (GitHub, Google)
+// and magic link authentication
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authenticating...</title>
+  </head>
+
+  <body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Completing sign in...</p>
+    </div>
+
+    <script>
+      import { supabase } from '../../lib/supabase';
+
+      async function handleCallback() {
+        try {
+          // Exchange the code for a session
+          const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.search);
+
+          if (error) {
+            throw error;
+          }
+
+          // Redirect to projects page on success
+          window.location.href = '/projects';
+        } catch (error) {
+          console.error('Error during auth callback:', error);
+          // Redirect to login with error
+          window.location.href = '/login?error=auth_failed';
+        }
+      }
+
+      handleCallback();
+    </script>
+  </body>
+</html>
