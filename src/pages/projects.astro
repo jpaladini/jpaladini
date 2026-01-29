@@ -1,36 +1,30 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 
-// Example projects - you can add more as you build them
+// Project showcase - add your projects here
 const projects = [
   {
-    id: 'shiny-dashboard',
-    title: 'Shiny Dashboard',
-    description: 'Interactive data visualizations built with R Shiny',
-    url: '#', // Replace with actual URL when ready
-    status: 'coming-soon', // or 'active'
+    id: 'pbi-snowflake-compare',
+    title: 'Power BI vs Snowflake Comparison',
+    description: 'Interactive comparison dashboard built with Streamlit',
+    url: 'https://jphzn-pbi-snwflk-compare-20260125.streamlit.app/',
+    status: 'active',
   },
   {
-    id: 'power-bi-reports',
-    title: 'Power BI Reports',
-    description: 'Business intelligence dashboards and analytics',
-    url: '#',
-    status: 'coming-soon',
+    id: 'claims-timeliness',
+    title: 'Claims Timeliness Dashboard',
+    description: 'Claims processing analytics built with Streamlit',
+    url: 'https://jp-claims-timeliness.streamlit.app/',
+    status: 'active',
   },
-  {
-    id: 'tableau-viz',
-    title: 'Tableau Visualizations',
-    description: 'Data storytelling with Tableau',
-    url: '#',
-    status: 'coming-soon',
-  },
-  {
-    id: 'ai-chatbot',
-    title: 'AI Chatbot',
-    description: 'Interactive AI-powered assistant',
-    url: '#',
-    status: 'coming-soon',
-  },
+  // Add more projects here
+  // {
+  //   id: 'project-id',
+  //   title: 'Project Title',
+  //   description: 'Project description',
+  //   url: 'https://your-project-url.com',
+  //   status: 'active', // or 'coming-soon'
+  // },
 ];
 ---
 
@@ -38,107 +32,62 @@ const projects = [
   title="Projects - Jason Paladini"
   description="Projects by Jason Paladini"
 >
-  <div class="max-w-4xl mx-auto px-6 py-12 sm:py-16">
-    <!-- Loading state (shown initially while checking auth) -->
-    <div id="loading-state" class="flex items-center justify-center py-16">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    </div>
+  <div class="max-w-7xl mx-auto px-6 py-12 sm:py-16">
+    <header class="mb-12">
+      <h1 class="text-3xl sm:text-4xl font-bold mb-2">Projects</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Explore my work</p>
+    </header>
 
-    <!-- Login gate (shown if not authenticated) -->
-    <div id="login-gate" class="hidden">
-      <div class="max-w-md mx-auto text-center">
-        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-        <h1 class="text-2xl sm:text-3xl font-bold mb-3">Authentication Required</h1>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">
-          Please sign in to access projects and showcases.
-        </p>
+    <!-- Projects Grid - Up to 4x4 with scrolling -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {projects.map((project) => (
         <a
-          href="/login"
-          class="inline-block py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+          href={project.status === 'active' ? project.url : '#'}
+          target={project.status === 'active' ? '_blank' : undefined}
+          rel={project.status === 'active' ? 'noopener noreferrer' : undefined}
+          class={`group block p-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all ${
+            project.status === 'active'
+              ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer'
+              : 'opacity-60 cursor-not-allowed'
+          }`}
+          aria-disabled={project.status !== 'active'}
         >
-          Sign In
-        </a>
-      </div>
-    </div>
-
-    <!-- Projects grid (shown if authenticated) -->
-    <div id="projects-content" class="hidden">
-      <header class="mb-12">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-2">Projects</h1>
-        <p class="text-lg text-gray-600 dark:text-gray-400">Explore my work</p>
-      </header>
-
-      <!-- 2x2 Project Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {projects.map((project) => (
-          <a
-            href={project.status === 'active' ? project.url : '#'}
-            class={`group block p-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all ${
-              project.status === 'active'
-                ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer'
-                : 'opacity-60 cursor-not-allowed'
-            }`}
-            aria-disabled={project.status !== 'active'}
-          >
+          <div class="flex flex-col h-full">
             <div class="flex items-start justify-between mb-3">
               <h2 class="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {project.title}
               </h2>
               {project.status === 'coming-soon' && (
-                <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded whitespace-nowrap ml-2">
                   Coming Soon
                 </span>
               )}
             </div>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
+            <p class="text-gray-600 dark:text-gray-400 text-sm flex-grow">
               {project.description}
             </p>
-          </a>
-        ))}
-      </div>
-
-      <!-- Empty state if no active projects -->
-      {projects.filter(p => p.status === 'active').length === 0 && (
-        <div class="mt-12 text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">
-            Projects are being prepared. Check back soon!
-          </p>
-        </div>
-      )}
+            {project.status === 'active' && (
+              <div class="mt-4 flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
+                <span>View Project</span>
+                <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+            )}
+          </div>
+        </a>
+      ))}
     </div>
+
+    <!-- Empty state if no projects -->
+    {projects.length === 0 && (
+      <div class="text-center py-16">
+        <svg class="w-10 h-10 text-gray-300 dark:text-gray-600 mb-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+        </svg>
+        <p class="text-gray-500 dark:text-gray-400">No projects yet</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Check back soon</p>
+      </div>
+    )}
   </div>
-
-  <script>
-    import { getSession } from '../lib/auth';
-
-    async function checkAuth() {
-      const loadingState = document.getElementById('loading-state');
-      const loginGate = document.getElementById('login-gate');
-      const projectsContent = document.getElementById('projects-content');
-
-      try {
-        const session = await getSession();
-
-        if (session) {
-          // User is authenticated - show projects
-          loadingState?.classList.add('hidden');
-          projectsContent?.classList.remove('hidden');
-        } else {
-          // User is not authenticated - show login gate
-          loadingState?.classList.add('hidden');
-          loginGate?.classList.remove('hidden');
-        }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        // On error, show login gate
-        loadingState?.classList.add('hidden');
-        loginGate?.classList.remove('hidden');
-      }
-    }
-
-    // Check auth on page load
-    checkAuth();
-  </script>
 </MainLayout>

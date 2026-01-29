@@ -41,53 +41,12 @@ const {
 
         <!-- Navigation Links -->
         <div class="flex items-center gap-6">
-          <!-- Projects link (shown when not authenticated) -->
           <a
-            id="projects-link"
             href="/projects"
             class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             Projects
           </a>
-
-          <!-- Projects dropdown (shown when authenticated) -->
-          <div id="projects-dropdown" class="hidden relative">
-            <button
-              id="projects-dropdown-btn"
-              class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Projects
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            <!-- Dropdown menu -->
-            <div
-              id="projects-dropdown-menu"
-              class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50"
-            >
-              <a
-                href="/projects"
-                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
-              >
-                All Projects
-              </a>
-              <hr class="my-2 border-gray-200 dark:border-gray-700" />
-              <!-- Individual project links will be added here dynamically -->
-              <div id="individual-projects">
-                <!-- Populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Sign out button (hidden by default, shown when authenticated) -->
-          <button
-            id="sign-out-btn"
-            class="hidden text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-          >
-            Sign Out
-          </button>
         </div>
       </div>
     </nav>
@@ -102,119 +61,6 @@ const {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
       }
-    </script>
-
-    <!-- Auth state management -->
-    <script>
-      import { supabase } from '../lib/supabase';
-      import { onAuthStateChange } from '../lib/auth';
-
-      // Define projects (sync with projects.astro)
-      const projects = [
-        {
-          id: 'shiny-dashboard',
-          title: 'Shiny Dashboard',
-          url: '#',
-          status: 'coming-soon',
-        },
-        {
-          id: 'power-bi-reports',
-          title: 'Power BI Reports',
-          url: '#',
-          status: 'coming-soon',
-        },
-        {
-          id: 'tableau-viz',
-          title: 'Tableau Visualizations',
-          url: '#',
-          status: 'coming-soon',
-        },
-        {
-          id: 'ai-chatbot',
-          title: 'AI Chatbot',
-          url: '#',
-          status: 'coming-soon',
-        },
-      ];
-
-      // Check auth state and update UI
-      async function updateAuthUI() {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        const signOutBtn = document.getElementById('sign-out-btn');
-        const projectsLink = document.getElementById('projects-link');
-        const projectsDropdown = document.getElementById('projects-dropdown');
-        const individualProjects = document.getElementById('individual-projects');
-
-        if (session) {
-          // Show authenticated UI
-          signOutBtn?.classList.remove('hidden');
-          projectsLink?.classList.add('hidden');
-          projectsDropdown?.classList.remove('hidden');
-
-          // Populate dropdown with individual project links
-          if (individualProjects) {
-            individualProjects.innerHTML = projects
-              .map((project) => `
-                <a
-                  href="${project.status === 'active' ? project.url : '#'}"
-                  class="block px-4 py-2 text-sm ${
-                    project.status === 'active'
-                      ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
-                      : 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                  }"
-                  ${project.status !== 'active' ? 'aria-disabled="true"' : ''}
-                >
-                  ${project.title}
-                  ${project.status === 'coming-soon' ? '<span class="text-xs ml-1">(Soon)</span>' : ''}
-                </a>
-              `)
-              .join('');
-          }
-        } else {
-          // Show non-authenticated UI
-          signOutBtn?.classList.add('hidden');
-          projectsLink?.classList.remove('hidden');
-          projectsDropdown?.classList.add('hidden');
-        }
-      }
-
-      // Toggle dropdown menu
-      function setupDropdown() {
-        const dropdownBtn = document.getElementById('projects-dropdown-btn');
-        const dropdownMenu = document.getElementById('projects-dropdown-menu');
-
-        if (!dropdownBtn || !dropdownMenu) return;
-
-        dropdownBtn.addEventListener('click', () => {
-          dropdownMenu.classList.toggle('hidden');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!dropdownBtn.contains(e.target as Node) && !dropdownMenu.contains(e.target as Node)) {
-            dropdownMenu.classList.add('hidden');
-          }
-        });
-      }
-
-      // Listen for auth state changes
-      onAuthStateChange((session) => {
-        updateAuthUI();
-      });
-
-      // Initial auth state check
-      updateAuthUI();
-
-      // Setup dropdown behavior
-      setupDropdown();
-
-      // Handle sign out
-      document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
-        const { signOut } = await import('../lib/auth');
-        await signOut();
-        window.location.href = '/';
-      });
     </script>
   </body>
 </html>
