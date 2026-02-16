@@ -170,25 +170,12 @@ const techCounts = allTechnologies.map(tech => ({
     <section class="mt-16 pt-12 border-t border-gray-200 dark:border-gray-700">
       <h2 class="text-2xl font-bold mb-6">Technology Stack</h2>
       <p class="text-gray-600 dark:text-gray-400 mb-8">
-        Technologies and tools used across all projects
+        Skills and technologies used across all projects
       </p>
 
-      <!-- Tech Count Data (for d3 visualization) -->
+      <!-- D3 Bar Chart Container -->
       <div id="tech-stack-viz" class="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8">
-        <!-- Simple list for now - you can replace with d3 visualization -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {techCounts.map(tech => (
-            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded">
-              <span class="font-medium text-gray-700 dark:text-gray-300">{tech.name}</span>
-              <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{tech.count}</span>
-            </div>
-          ))}
-        </div>
-
-        <!-- Placeholder for d3 chart -->
-        <div class="mt-8 p-8 bg-gray-50 dark:bg-slate-700 rounded-lg text-center text-gray-500 dark:text-gray-400">
-          <p class="text-sm">D3 visualization placeholder - add your custom chart here</p>
-        </div>
+        <div id="bar-chart"></div>
       </div>
 
       <!-- Data for d3 (hidden, available for JavaScript) -->
@@ -197,4 +184,105 @@ const techCounts = allTechnologies.map(tech => ({
       </script>
     </section>
   </div>
+
+  <!-- D3.js Library -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- D3 Bar Chart Script -->
+  <script>
+    // Parse tech data from JSON
+    const techData = JSON.parse(document.getElementById('tech-data').textContent);
+
+    // Chart dimensions and configuration
+    const margin = { top: 20, right: 60, bottom: 40, left: 150 };
+    const width = Math.min(800, window.innerWidth - 100) - margin.left - margin.right;
+    const height = techData.length * 35;
+
+    // Detect dark mode
+    const isDarkMode = document.documentElement.classList.contains('dark');
+
+    // Color scheme
+    const barColor = '#2563eb'; // blue-600
+    const barHoverColor = '#1d4ed8'; // blue-700
+    const textColor = isDarkMode ? '#e5e7eb' : '#374151'; // gray-200 : gray-700
+    const labelColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 : gray-500
+
+    // Create SVG
+    const svg = d3.select('#bar-chart')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Create scales
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(techData, d => d.count)])
+      .range([0, width]);
+
+    const y = d3.scaleBand()
+      .domain(techData.map(d => d.name))
+      .range([0, height])
+      .padding(0.2);
+
+    // Add bars
+    svg.selectAll('.bar')
+      .data(techData)
+      .enter()
+      .append('rect')
+      .attr('class', 'bar')
+      .attr('x', 0)
+      .attr('y', d => y(d.name))
+      .attr('width', d => x(d.count))
+      .attr('height', y.bandwidth())
+      .attr('fill', barColor)
+      .attr('rx', 4)
+      .on('mouseover', function() {
+        d3.select(this).attr('fill', barHoverColor);
+      })
+      .on('mouseout', function() {
+        d3.select(this).attr('fill', barColor);
+      });
+
+    // Add labels (technology names)
+    svg.selectAll('.label')
+      .data(techData)
+      .enter()
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', -10)
+      .attr('y', d => y(d.name) + y.bandwidth() / 2)
+      .attr('dy', '0.35em')
+      .attr('text-anchor', 'end')
+      .attr('fill', textColor)
+      .attr('font-size', '14px')
+      .attr('font-weight', '500')
+      .text(d => d.name);
+
+    // Add count labels (on the bars)
+    svg.selectAll('.count')
+      .data(techData)
+      .enter()
+      .append('text')
+      .attr('class', 'count')
+      .attr('x', d => x(d.count) + 10)
+      .attr('y', d => y(d.name) + y.bandwidth() / 2)
+      .attr('dy', '0.35em')
+      .attr('fill', labelColor)
+      .attr('font-size', '13px')
+      .attr('font-weight', '600')
+      .text(d => `${d.count} project${d.count > 1 ? 's' : ''}`);
+
+    // Add x-axis
+    svg.append('g')
+      .attr('transform', `translate(0,${height})`)
+      .call(d3.axisBottom(x).ticks(Math.min(6, d3.max(techData, d => d.count))))
+      .attr('color', labelColor)
+      .selectAll('text')
+      .attr('fill', labelColor);
+
+    // Style axis
+    svg.selectAll('.domain, .tick line')
+      .attr('stroke', isDarkMode ? '#4b5563' : '#d1d5db');
+  </script>
 </MainLayout>
