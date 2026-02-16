@@ -183,104 +183,110 @@ const techCounts = allTechnologies.map(tech => ({
     </section>
   </div>
 
-  <!-- D3.js Library -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-
   <!-- D3 Bar Chart Script -->
-  <script>
-    // Parse tech data from JSON
-    const techData = JSON.parse(document.getElementById('tech-data').textContent);
+  <script is:inline src="https://d3js.org/d3.v7.min.js"></script>
+  <script is:inline>
+    // Wait for d3 to load and DOM to be ready
+    window.addEventListener('load', function() {
+      if (typeof d3 === 'undefined') {
+        console.error('D3.js failed to load');
+        return;
+      }
 
-    // Chart dimensions and configuration
-    const margin = { top: 20, right: 60, bottom: 40, left: 150 };
-    const width = Math.min(800, window.innerWidth - 100) - margin.left - margin.right;
-    const height = techData.length * 35;
+      // Parse tech data from JSON
+      const techData = JSON.parse(document.getElementById('tech-data').textContent);
 
-    // Detect dark mode
-    const isDarkMode = document.documentElement.classList.contains('dark');
+      // Chart dimensions and configuration
+      const margin = { top: 20, right: 60, bottom: 40, left: 150 };
+      const width = Math.min(800, window.innerWidth - 100) - margin.left - margin.right;
+      const height = techData.length * 35;
 
-    // Color scheme
-    const barColor = '#2563eb'; // blue-600
-    const barHoverColor = '#1d4ed8'; // blue-700
-    const textColor = isDarkMode ? '#e5e7eb' : '#374151'; // gray-200 : gray-700
-    const labelColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 : gray-500
+      // Detect dark mode
+      const isDarkMode = document.documentElement.classList.contains('dark');
 
-    // Create SVG
-    const svg = d3.select('#bar-chart')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      // Color scheme
+      const barColor = '#2563eb'; // blue-600
+      const barHoverColor = '#1d4ed8'; // blue-700
+      const textColor = isDarkMode ? '#e5e7eb' : '#374151'; // gray-200 : gray-700
+      const labelColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 : gray-500
 
-    // Create scales
-    const x = d3.scaleLinear()
-      .domain([0, d3.max(techData, d => d.count)])
-      .range([0, width]);
+      // Create SVG
+      const svg = d3.select('#bar-chart')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const y = d3.scaleBand()
-      .domain(techData.map(d => d.name))
-      .range([0, height])
-      .padding(0.2);
+      // Create scales
+      const x = d3.scaleLinear()
+        .domain([0, d3.max(techData, d => d.count)])
+        .range([0, width]);
 
-    // Add bars
-    svg.selectAll('.bar')
-      .data(techData)
-      .enter()
-      .append('rect')
-      .attr('class', 'bar')
-      .attr('x', 0)
-      .attr('y', d => y(d.name))
-      .attr('width', d => x(d.count))
-      .attr('height', y.bandwidth())
-      .attr('fill', barColor)
-      .attr('rx', 4)
-      .on('mouseover', function() {
-        d3.select(this).attr('fill', barHoverColor);
-      })
-      .on('mouseout', function() {
-        d3.select(this).attr('fill', barColor);
-      });
+      const y = d3.scaleBand()
+        .domain(techData.map(d => d.name))
+        .range([0, height])
+        .padding(0.2);
 
-    // Add labels (technology names)
-    svg.selectAll('.label')
-      .data(techData)
-      .enter()
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', -10)
-      .attr('y', d => y(d.name) + y.bandwidth() / 2)
-      .attr('dy', '0.35em')
-      .attr('text-anchor', 'end')
-      .attr('fill', textColor)
-      .attr('font-size', '14px')
-      .attr('font-weight', '500')
-      .text(d => d.name);
+      // Add bars
+      svg.selectAll('.bar')
+        .data(techData)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', 0)
+        .attr('y', d => y(d.name))
+        .attr('width', d => x(d.count))
+        .attr('height', y.bandwidth())
+        .attr('fill', barColor)
+        .attr('rx', 4)
+        .on('mouseover', function() {
+          d3.select(this).attr('fill', barHoverColor);
+        })
+        .on('mouseout', function() {
+          d3.select(this).attr('fill', barColor);
+        });
 
-    // Add count labels (on the bars)
-    svg.selectAll('.count')
-      .data(techData)
-      .enter()
-      .append('text')
-      .attr('class', 'count')
-      .attr('x', d => x(d.count) + 10)
-      .attr('y', d => y(d.name) + y.bandwidth() / 2)
-      .attr('dy', '0.35em')
-      .attr('fill', labelColor)
-      .attr('font-size', '13px')
-      .attr('font-weight', '600')
-      .text(d => `${d.count} project${d.count > 1 ? 's' : ''}`);
+      // Add labels (technology names)
+      svg.selectAll('.label')
+        .data(techData)
+        .enter()
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', -10)
+        .attr('y', d => y(d.name) + y.bandwidth() / 2)
+        .attr('dy', '0.35em')
+        .attr('text-anchor', 'end')
+        .attr('fill', textColor)
+        .attr('font-size', '14px')
+        .attr('font-weight', '500')
+        .text(d => d.name);
 
-    // Add x-axis
-    svg.append('g')
-      .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x).ticks(Math.min(6, d3.max(techData, d => d.count))))
-      .attr('color', labelColor)
-      .selectAll('text')
-      .attr('fill', labelColor);
+      // Add count labels (on the bars)
+      svg.selectAll('.count')
+        .data(techData)
+        .enter()
+        .append('text')
+        .attr('class', 'count')
+        .attr('x', d => x(d.count) + 10)
+        .attr('y', d => y(d.name) + y.bandwidth() / 2)
+        .attr('dy', '0.35em')
+        .attr('fill', labelColor)
+        .attr('font-size', '13px')
+        .attr('font-weight', '600')
+        .text(d => `${d.count} project${d.count > 1 ? 's' : ''}`);
 
-    // Style axis
-    svg.selectAll('.domain, .tick line')
-      .attr('stroke', isDarkMode ? '#4b5563' : '#d1d5db');
+      // Add x-axis
+      svg.append('g')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(Math.min(6, d3.max(techData, d => d.count))))
+        .attr('color', labelColor)
+        .selectAll('text')
+        .attr('fill', labelColor);
+
+      // Style axis
+      svg.selectAll('.domain, .tick line')
+        .attr('stroke', isDarkMode ? '#4b5563' : '#d1d5db');
+    });
   </script>
 </MainLayout>
