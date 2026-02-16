@@ -12,7 +12,7 @@ const projects = [
       'Query optimization insights',
       'Cost analysis and TCO comparison',
     ],
-    technologies: ['Streamlit', 'Python', 'Power BI', 'Snowflake', 'Data Modeling'],
+    technologies: ['Streamlit', 'Python', 'Power BI', 'Snowflake', 'Data Engineering'],
     url: 'https://jphzn-pbi-snwflk-compare-20260125.streamlit.app/',
     screenshot: '/projects/pbi-snowflake.png', // placeholder
     status: 'active',
@@ -26,7 +26,7 @@ const projects = [
       'Power BI relationship mapping',
       'Metadata exploration and analysis',
     ],
-    technologies: ['Streamlit', 'Python', 'dbt', 'Power BI', 'DAX', 'Metadata Analysis'],
+    technologies: ['Streamlit', 'Python', 'dbt', 'Power BI', 'Data Engineering'],
     url: 'https://jp-pbi-model-explorer.streamlit.app/',
     screenshot: '/projects/model-explorer.png', // placeholder
     status: 'active',
@@ -40,7 +40,7 @@ const projects = [
       'Data quality metrics and alerts',
       'Null detection and type validation',
     ],
-    technologies: ['Streamlit', 'Python', 'pandas', 'Data Quality', 'Analytics'],
+    technologies: ['Streamlit', 'Python', 'Data Quality', 'Data Engineering'],
     url: 'https://jphzn-profiling.streamlit.app/',
     screenshot: '/projects/profiling.png', // placeholder
     status: 'active',
@@ -54,7 +54,7 @@ const projects = [
       'Processing bottleneck identification',
       'Operational KPIs and metrics',
     ],
-    technologies: ['Streamlit', 'Python', 'Healthcare Analytics', 'Business Intelligence'],
+    technologies: ['Streamlit', 'Python', 'Business Intelligence', 'Healthcare Analytics'],
     url: 'https://jp-claims-timeliness.streamlit.app/',
     screenshot: '/projects/claims.png', // placeholder
     status: 'active',
@@ -68,7 +68,7 @@ const projects = [
       'Milestone and dependency tracking',
       'Strategic planning interface',
     ],
-    technologies: ['Streamlit', 'Python', 'Project Management', 'Visualization'],
+    technologies: ['Streamlit', 'Python', 'Data Visualization'],
     url: 'https://jphzn-sra-timeline.streamlit.app/',
     screenshot: '/projects/timeline.png', // placeholder
     status: 'active',
@@ -82,7 +82,7 @@ const projects = [
       'Interactive game state management',
       'Clean UI/UX design',
     ],
-    technologies: ['Streamlit', 'Python', 'Algorithms', 'Game Development'],
+    technologies: ['Streamlit', 'Python'],
     url: 'https://jp-chess.streamlit.app/',
     screenshot: '/projects/chess.png', // placeholder
     status: 'active',
@@ -197,9 +197,9 @@ const techCounts = allTechnologies.map(tech => ({
       const techData = JSON.parse(document.getElementById('tech-data').textContent);
 
       // Chart dimensions and configuration
-      const margin = { top: 20, right: 60, bottom: 40, left: 150 };
-      const width = Math.min(800, window.innerWidth - 100) - margin.left - margin.right;
-      const height = techData.length * 35;
+      const margin = { top: 20, right: 120, bottom: 40, left: 180 };
+      const width = Math.min(900, window.innerWidth - 100) - margin.left - margin.right;
+      const height = techData.length * 40;
 
       // Detect dark mode
       const isDarkMode = document.documentElement.classList.contains('dark');
