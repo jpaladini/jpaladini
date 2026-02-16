@@ -179,9 +179,7 @@ const techCounts = allTechnologies.map(tech => ({
       </div>
 
       <!-- Data for d3 (hidden, available for JavaScript) -->
-      <script type="application/json" id="tech-data">
-        {JSON.stringify(techCounts)}
-      </script>
+      <script type="application/json" id="tech-data" set:html={JSON.stringify(techCounts)} />
     </section>
   </div>
 
