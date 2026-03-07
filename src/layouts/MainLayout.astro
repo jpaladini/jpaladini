@@ -1,4 +1,6 @@
 ---
+import Analytics from '@vercel/analytics/astro';
+
 interface Props {
   title?: string;
   description?: string;
@@ -31,6 +33,9 @@ const {
         "https://linkedin.com/in/jason-paladini"
       ]
     })} />
+    
+    <!-- Vercel Web Analytics -->
+    <Analytics />
   </head>
 
   <body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 min-h-screen">
