@@ -32,9 +32,13 @@ import MainLayout from '../layouts/MainLayout.astro';
               <span class="text-sm text-gray-500 dark:text-gray-500">2017 - Present</span>
             </div>
             <p class="text-gray-600 dark:text-gray-400">Horizon Blue Cross Blue Shield of New Jersey</p>
-            <p class="text-gray-700 dark:text-gray-300 mt-2 text-sm">
-              Key technical contributor to the organization's first major transition from data-center–hosted platforms to cloud-based lakehouse architectures. Hands-on implementation across Microsoft Fabric, Databricks, and Snowflake while ensuring existing reporting pipelines remain reliable. Provide the technical foundation and operational support for a 25-person analytics team—building dbt models, Fabric warehouse tables, semantic models, governance entries, and catalog integrations so they can deliver reporting at scale.
-            </p>
+            <ul class="mt-3 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              <li>Built an end-to-end call intelligence lakehouse pipeline that automates ingestion, transcription, analysis, and semantic search across customer service recordings using Bronze/Silver/Gold + embeddings architecture</li>
+              <li>Designed a prompt control plane powered by a database table—new LLM workflows deploy via data configuration only, no code changes, with versioned prompts and production promotion paths</li>
+              <li>Launched a dual-index RAG agent combining transcript retrieval and prior LLM analysis through vector search, grounding answers with citations for high-trust investigation of call center activity</li>
+              <li>Established an MLflow-based evaluation framework with deterministic schema checks, LLM-as-judge scoring, and A/B comparison across prompts and models for repeatable GenAI quality measurement</li>
+              <li>Migrated legacy SQL Server and DB2 systems to cloud platforms (Databricks, Snowflake, Fabric) while maintaining production reporting pipelines for a 25-person analytics team</li>
+            </ul>
           </div>
           <div>
             <div class="flex justify-between items-baseline flex-wrap gap-2">
