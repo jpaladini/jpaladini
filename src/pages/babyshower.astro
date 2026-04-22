@@ -1,0 +1,578 @@
+---
+// Baby Shower page for Amy Paladini — jpaladini.com/babyshower
+// RSVP persistence via Formspree: replace YOUR_FORM_ID with your endpoint from formspree.io
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baby in Bloom · Baby Shower for Amy Paladini</title>
+    <meta name="description" content="Join us to celebrate Amy Paladini at her baby shower on May 2nd, 2026." />
+    <link rel="icon" type="image/png" href="/jp_black.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Lato', sans-serif;
+        font-weight: 400;
+        background-color: #fdf6f0;
+        color: #5c3347;
+        min-height: 100vh;
+      }
+
+      .serif { font-family: 'Playfair Display', serif; }
+      .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
+
+      /* ── Layout ── */
+      .page-border-top {
+        height: 6px;
+        background: linear-gradient(90deg, #f9a8d4, #fda4af, #f9a8d4, #fca5a5, #f9a8d4);
+      }
+      .page-border-bottom {
+        height: 6px;
+        background: linear-gradient(90deg, #fca5a5, #f9a8d4, #fda4af, #f9a8d4, #fca5a5);
+      }
+
+      /* ── Hero ── */
+      .hero {
+        background: linear-gradient(180deg, #fce7f3 0%, #fdf2f8 40%, #fdf6f0 100%);
+        text-align: center;
+        padding: 4rem 1.5rem 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-eyebrow {
+        font-family: 'Lato', sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #be185d;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: clamp(3.5rem, 12vw, 7rem);
+        color: #9d174d;
+        line-height: 1.05;
+        margin-bottom: 0.25rem;
+      }
+
+      .hero-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1.5rem auto;
+      }
+      .hero-divider-line {
+        height: 1px;
+        width: 80px;
+        background: linear-gradient(90deg, transparent, #f9a8d4, transparent);
+      }
+
+      .hero-for {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: #be185d;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+      .hero-name {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 7vw, 3.5rem);
+        color: #831843;
+        font-weight: 600;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+      }
+      .hero-sub {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: 1.1rem;
+        color: #be185d;
+      }
+
+      /* Floating petal decorations */
+      .petal-tl { position: absolute; top: -20px; left: -20px; width: 180px; opacity: 0.35; }
+      .petal-tr { position: absolute; top: -20px; right: -20px; width: 180px; opacity: 0.35; transform: scaleX(-1); }
+      .petal-bl { position: absolute; bottom: -10px; left: 10px; width: 120px; opacity: 0.25; }
+      .petal-br { position: absolute; bottom: -10px; right: 10px; width: 120px; opacity: 0.25; transform: scaleX(-1); }
+
+      /* ── Content ── */
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: #fff;
+        border: 1px solid #fbcfe8;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 2px 16px rgba(244, 114, 182, 0.07);
+      }
+
+      .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: #9d174d;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      /* ── Details ── */
+      .detail-list { display: flex; flex-direction: column; gap: 1.1rem; }
+      .detail-row { display: flex; align-items: flex-start; gap: 0.9rem; }
+      .detail-icon { font-size: 1.25rem; line-height: 1; margin-top: 2px; flex-shrink: 0; }
+      .detail-label { font-weight: 700; font-size: 0.95rem; color: #831843; display: block; margin-bottom: 0.1rem; }
+      .detail-value { font-size: 0.9rem; color: #9d174d; }
+      .detail-link {
+        font-size: 0.8rem;
+        color: #db2777;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        display: inline-block;
+        margin-top: 0.2rem;
+        transition: color 0.15s;
+      }
+      .detail-link:hover { color: #9d174d; }
+
+      /* ── RSVP Form ── */
+      .rsvp-deadline {
+        text-align: center;
+        font-size: 0.82rem;
+        color: #be185d;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.03em;
+      }
+
+      .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
+      .form-label { font-size: 0.82rem; font-weight: 700; color: #831843; letter-spacing: 0.04em; text-transform: uppercase; }
+
+      .form-input, .form-select, .form-textarea {
+        width: 100%;
+        border: 1px solid #fbcfe8;
+        border-radius: 0.6rem;
+        padding: 0.65rem 0.9rem;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.95rem;
+        color: #5c3347;
+        background: #fdf6f0;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        outline: none;
+        appearance: none;
+      }
+      .form-input:focus, .form-select:focus, .form-textarea:focus {
+        border-color: #f9a8d4;
+        box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.25);
+      }
+      .form-textarea { resize: vertical; min-height: 80px; }
+
+      .radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+      .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #7c3f5e;
+      }
+      .radio-label input[type="radio"] { accent-color: #ec4899; width: 1rem; height: 1rem; cursor: pointer; }
+
+      .guests-row { display: flex; align-items: center; gap: 0.75rem; }
+      .form-input-sm {
+        width: 5rem;
+        border: 1px solid #fbcfe8;
+        border-radius: 0.6rem;
+        padding: 0.65rem 0.9rem;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.95rem;
+        color: #5c3347;
+        background: #fdf6f0;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .form-input-sm:focus {
+        border-color: #f9a8d4;
+        box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.25);
+      }
+
+      .btn-rsvp {
+        width: 100%;
+        background: linear-gradient(135deg, #f472b6, #ec4899);
+        color: #fff;
+        font-family: 'Lato', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.9rem 1rem;
+        cursor: pointer;
+        transition: opacity 0.15s, transform 0.1s;
+        margin-top: 0.5rem;
+      }
+      .btn-rsvp:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn-rsvp:active { transform: translateY(0); }
+
+      .form-success, .form-error {
+        text-align: center;
+        padding: 0.75rem 1rem;
+        border-radius: 0.6rem;
+        font-size: 0.9rem;
+        display: none;
+        margin-top: 0.5rem;
+      }
+      .form-success { background: #fce7f3; color: #9d174d; border: 1px solid #fbcfe8; }
+      .form-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+      /* ── Registry ── */
+      .registry-note {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #be185d;
+        font-style: italic;
+        margin-bottom: 1.25rem;
+        line-height: 1.5;
+      }
+      .registry-btn-wrap { display: flex; justify-content: center; }
+      .btn-registry {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #fff;
+        border: 2px solid #fbcfe8;
+        color: #9d174d;
+        font-family: 'Lato', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        padding: 0.75rem 1.75rem;
+        border-radius: 999px;
+        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      }
+      .btn-registry:hover {
+        background: #fce7f3;
+        border-color: #f9a8d4;
+        transform: translateY(-1px);
+      }
+
+      /* ── Footer ── */
+      .footer {
+        text-align: center;
+        padding: 2.5rem 1.5rem 2rem;
+      }
+      .footer-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .footer-line {
+        height: 1px;
+        width: 50px;
+        background: linear-gradient(90deg, transparent, #f9a8d4, transparent);
+      }
+      .footer-msg {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: 1.15rem;
+        color: #9d174d;
+        margin-bottom: 0.4rem;
+      }
+      .footer-due {
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #db2777;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-border-top"></div>
+
+    <!-- ── Hero ── -->
+    <header class="hero">
+
+      <!-- Corner floral decorations -->
+      <svg class="petal-tl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="#f9a8d4">
+          <ellipse cx="60" cy="120" rx="22" ry="55" transform="rotate(-35 60 120)"/>
+          <ellipse cx="100" cy="100" rx="18" ry="50" transform="rotate(0 100 100)"/>
+          <ellipse cx="140" cy="110" rx="22" ry="55" transform="rotate(35 140 110)"/>
+          <ellipse cx="70" cy="75" rx="18" ry="45" transform="rotate(-60 70 75)"/>
+          <ellipse cx="130" cy="75" rx="18" ry="45" transform="rotate(60 130 75)"/>
+          <circle cx="100" cy="100" r="22" fill="#fbbf24" opacity="0.7"/>
+        </g>
+        <g fill="#86efac" opacity="0.6">
+          <ellipse cx="30" cy="160" rx="10" ry="35" transform="rotate(-20 30 160)"/>
+          <ellipse cx="170" cy="150" rx="10" ry="35" transform="rotate(20 170 150)"/>
+          <ellipse cx="10" cy="100" rx="8" ry="30" transform="rotate(-40 10 100)"/>
+        </g>
+      </svg>
+
+      <svg class="petal-tr" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="#fda4af">
+          <ellipse cx="60" cy="120" rx="22" ry="55" transform="rotate(-35 60 120)"/>
+          <ellipse cx="100" cy="100" rx="18" ry="50" transform="rotate(0 100 100)"/>
+          <ellipse cx="140" cy="110" rx="22" ry="55" transform="rotate(35 140 110)"/>
+          <ellipse cx="70" cy="75" rx="18" ry="45" transform="rotate(-60 70 75)"/>
+          <ellipse cx="130" cy="75" rx="18" ry="45" transform="rotate(60 130 75)"/>
+          <circle cx="100" cy="100" r="22" fill="#fbbf24" opacity="0.7"/>
+        </g>
+        <g fill="#86efac" opacity="0.6">
+          <ellipse cx="30" cy="160" rx="10" ry="35" transform="rotate(-20 30 160)"/>
+          <ellipse cx="170" cy="150" rx="10" ry="35" transform="rotate(20 170 150)"/>
+          <ellipse cx="190" cy="100" rx="8" ry="30" transform="rotate(40 190 100)"/>
+        </g>
+      </svg>
+
+      <svg class="petal-bl" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="#f9a8d4" opacity="0.8">
+          <ellipse cx="50" cy="80" rx="14" ry="38" transform="rotate(-30 50 80)"/>
+          <ellipse cx="80" cy="65" rx="12" ry="35" transform="rotate(10 80 65)"/>
+          <ellipse cx="110" cy="75" rx="14" ry="38" transform="rotate(45 110 75)"/>
+          <circle cx="80" cy="78" r="15" fill="#fbbf24" opacity="0.65"/>
+        </g>
+        <g fill="#86efac" opacity="0.5">
+          <ellipse cx="20" cy="120" rx="7" ry="28" transform="rotate(-15 20 120)"/>
+          <ellipse cx="140" cy="110" rx="7" ry="28" transform="rotate(25 140 110)"/>
+        </g>
+      </svg>
+
+      <svg class="petal-br" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="#fda4af" opacity="0.8">
+          <ellipse cx="50" cy="80" rx="14" ry="38" transform="rotate(-30 50 80)"/>
+          <ellipse cx="80" cy="65" rx="12" ry="35" transform="rotate(10 80 65)"/>
+          <ellipse cx="110" cy="75" rx="14" ry="38" transform="rotate(45 110 75)"/>
+          <circle cx="80" cy="78" r="15" fill="#fbbf24" opacity="0.65"/>
+        </g>
+        <g fill="#86efac" opacity="0.5">
+          <ellipse cx="20" cy="120" rx="7" ry="28" transform="rotate(-15 20 120)"/>
+          <ellipse cx="140" cy="110" rx="7" ry="28" transform="rotate(25 140 110)"/>
+        </g>
+      </svg>
+
+      <!-- Content -->
+      <p class="hero-eyebrow">You are cordially invited to</p>
+
+      <h1 class="hero-title">Baby in Bloom</h1>
+
+      <div class="hero-divider">
+        <div class="hero-divider-line"></div>
+        <svg width="22" height="22" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g fill="#f9a8d4">
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(0 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(60 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(120 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(180 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(240 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="7" ry="13" transform="rotate(300 25 25) translate(0 -15)"/>
+          </g>
+          <circle cx="25" cy="25" r="9" fill="#fbbf24"/>
+        </svg>
+        <div class="hero-divider-line"></div>
+      </div>
+
+      <p class="hero-for">A Baby Shower Celebrating</p>
+      <h2 class="hero-name">Amy Paladini</h2>
+      <p class="hero-sub">and the arrival of her baby girl</p>
+
+    </header>
+
+    <!-- ── Main Content ── -->
+    <main class="content">
+
+      <!-- Event Details -->
+      <section class="card" aria-labelledby="details-heading">
+        <h3 id="details-heading" class="card-title">Event Details</h3>
+        <div class="detail-list">
+
+          <div class="detail-row">
+            <span class="detail-icon" aria-hidden="true">🗓</span>
+            <div>
+              <span class="detail-label">Date &amp; Time</span>
+              <span class="detail-value">Saturday, May 2nd, 2026 &nbsp;·&nbsp; 12:00 – 3:00 PM</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-icon" aria-hidden="true">📍</span>
+            <div>
+              <span class="detail-label">Location</span>
+              <span class="detail-value">152 Alps Rd, Wayne, NJ 07470</span>
+              <a
+                href="https://maps.google.com/?q=152+Alps+Rd+Wayne+NJ+07470"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="detail-link"
+              >Get directions →</a>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-icon" aria-hidden="true">💐</span>
+            <div>
+              <span class="detail-label">Hosted by</span>
+              <span class="detail-value">Ashley Dolan</span>
+              <a href="tel:+19145644662" class="detail-link">(914) 564-4662</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RSVP -->
+      <section class="card" aria-labelledby="rsvp-heading">
+        <h3 id="rsvp-heading" class="card-title">RSVP</h3>
+        <p class="rsvp-deadline">Please respond by Friday, May 1st, 2026</p>
+
+        <form id="rsvp-form" action="https://formspree.io/f/xpqkowoq" method="POST">
+
+          <div class="form-group">
+            <label class="form-label" for="name">Your Name</label>
+            <input class="form-input" type="text" id="name" name="name" placeholder="Jane Smith" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="jane@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">Will you attend?</span>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="attending" value="Joyfully accepts" required />
+                Joyfully accepts!
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="attending" value="Regretfully declines" />
+                Regretfully declines
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="guests">Number of Guests</label>
+            <div class="guests-row">
+              <input class="form-input-sm" type="number" id="guests" name="guests" min="1" max="8" value="1" />
+              <span style="font-size:0.85rem;color:#be185d;">including yourself</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Note for Amy <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Share a well wish or a note…"></textarea>
+          </div>
+
+          <button type="submit" class="btn-rsvp">Send RSVP &nbsp;🌸</button>
+
+          <div id="form-success" class="form-success" role="alert">
+            Thank you! Your RSVP has been received. We can't wait to celebrate with you! 🎀
+          </div>
+          <div id="form-error" class="form-error" role="alert">
+            Something went wrong. Please try again or reach out to Ashley directly.
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Registry -->
+      <section class="card" aria-labelledby="registry-heading">
+        <h3 id="registry-heading" class="card-title">Baby Registry</h3>
+        <p class="registry-note">
+          Your presence is the greatest gift of all.<br />
+          If you'd like to honor the little one, Amy's registry is on Amazon.
+        </p>
+        <div class="registry-btn-wrap">
+          <a
+            href="https://www.amazon.com/baby-reg/amy-paladini-june-2026-wayne/1TIVT3BZ7MJRU"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-registry"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.5 2h11a1 1 0 0 1 .894.553l1.5 3A1 1 0 0 1 20 6v1a4 4 0 0 1-1.026 2.682A3 3 0 0 1 16 14.829V19a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-4.171A3 3 0 0 1 5.026 9.682 4 4 0 0 1 4 7V6a1 1 0 0 1 .106-.447l1.5-3A1 1 0 0 1 6.5 2z" stroke="#9d174d" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M4 6h16M12 6v8" stroke="#9d174d" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            View Amy's Amazon Registry
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="footer">
+      <div class="footer-divider">
+        <div class="footer-line"></div>
+        <svg width="18" height="18" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g fill="#f9a8d4">
+            <ellipse cx="25" cy="10" rx="6" ry="12" transform="rotate(0 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="6" ry="12" transform="rotate(72 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="6" ry="12" transform="rotate(144 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="6" ry="12" transform="rotate(216 25 25) translate(0 -15)"/>
+            <ellipse cx="25" cy="10" rx="6" ry="12" transform="rotate(288 25 25) translate(0 -15)"/>
+          </g>
+          <circle cx="25" cy="25" r="8" fill="#fbbf24"/>
+        </svg>
+        <div class="footer-line"></div>
+      </div>
+      <p class="footer-msg">With love, as we welcome Baby Girl Paladini</p>
+      <p class="footer-due">Due June 17, 2026</p>
+    </footer>
+
+    <div class="page-border-bottom"></div>
+
+    <script>
+      const form = document.getElementById('rsvp-form') as HTMLFormElement | null;
+      const successMsg = document.getElementById('form-success');
+      const errorMsg = document.getElementById('form-error');
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form) return;
+
+        const data = new FormData(form);
+
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: { Accept: 'application/json' },
+          });
+
+          if (res.ok) {
+            form.reset();
+            if (successMsg) successMsg.style.display = 'block';
+            if (errorMsg) errorMsg.style.display = 'none';
+          } else {
+            throw new Error('Server error');
+          }
+        } catch {
+          if (errorMsg) errorMsg.style.display = 'block';
+          if (successMsg) successMsg.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>
