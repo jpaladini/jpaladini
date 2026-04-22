@@ -620,7 +620,9 @@
     <div class="page-border-bottom"></div>
 
     <script>
-      import { supabase } from '../lib/supabase';
+      const UPSTASH_URL = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_URL as string;
+      const UPSTASH_TOKEN = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_TOKEN as string;
+      const LIST_KEY = 'baby_shower_messages';
 
       const form = document.getElementById('rsvp-form') as HTMLFormElement | null;
       const successMsg = document.getElementById('form-success');
@@ -630,7 +632,20 @@
       const wallEmpty = document.getElementById('wall-empty');
       const wallLoading = document.getElementById('wall-loading');
 
-      interface Message { id: string; name: string; message: string; created_at: string; }
+      interface Message { name: string; message: string; ts: number; }
+
+      async function redisCmd(command: (string | number)[]) {
+        const res = await fetch(UPSTASH_URL, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${UPSTASH_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(command),
+        });
+        const json = await res.json() as { result: unknown };
+        return json.result;
+      }
 
       function escapeHtml(str: string): string {
         return str
@@ -656,16 +671,14 @@
       }
 
       async function loadMessages() {
-        const { data, error } = await supabase
-          .from('baby_shower_messages')
-          .select('id, name, message, created_at')
-          .order('created_at', { ascending: false });
-        if (error) {
-          console.error('Error loading messages:', error);
+        try {
+          const result = await redisCmd(['LRANGE', LIST_KEY, '0', '-1']);
+          const messages = ((result as string[]) ?? []).map(s => JSON.parse(s) as Message);
+          renderMessages(messages);
+        } catch (err) {
+          console.error('Error loading messages:', err);
           if (wallLoading) wallLoading.style.display = 'none';
-          return;
         }
-        renderMessages((data ?? []) as Message[]);
       }
 
       form?.addEventListener('submit', async (e) => {
@@ -686,11 +699,9 @@
           if (!res.ok) throw new Error('Formspree error');
 
           if (isPublic && name && message) {
-            const { error: sbError } = await supabase
-              .from('baby_shower_messages')
-              .insert({ name, message });
-            if (sbError) console.error('Supabase insert error:', sbError);
-            else await loadMessages();
+            const entry = JSON.stringify({ name, message, ts: Date.now() });
+            await redisCmd(['LPUSH', LIST_KEY, entry]);
+            await loadMessages();
           }
 
           form.reset();
