@@ -1,6 +1,7 @@
 ---
 // Baby Shower page for Amy Paladini — jpaladini.com/babyshower
-// RSVP persistence via Formspree: replace YOUR_FORM_ID with your endpoint from formspree.io
+const upstashUrl = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_URL ?? '';
+const upstashToken = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_TOKEN ?? '';
 ---
 
 <!DOCTYPE html>
@@ -619,41 +620,37 @@
 
     <div class="page-border-bottom"></div>
 
-    <script>
-      const UPSTASH_URL = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_URL as string;
-      const UPSTASH_TOKEN = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_TOKEN as string;
+    <script define:vars={{ upstashUrl, upstashToken }}>
       const LIST_KEY = 'baby_shower_messages';
 
-      const form = document.getElementById('rsvp-form') as HTMLFormElement | null;
+      const form = document.getElementById('rsvp-form');
       const successMsg = document.getElementById('form-success');
       const errorMsg = document.getElementById('form-error');
-      const makePublicCheckbox = document.getElementById('make-public') as HTMLInputElement | null;
+      const makePublicCheckbox = document.getElementById('make-public');
       const wall = document.getElementById('message-wall');
       const wallEmpty = document.getElementById('wall-empty');
       const wallLoading = document.getElementById('wall-loading');
 
-      interface Message { name: string; message: string; ts: number; }
-
-      async function redisCmd(command: (string | number)[]) {
-        const res = await fetch(UPSTASH_URL, {
+      async function redisCmd(command) {
+        const res = await fetch(upstashUrl, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${UPSTASH_TOKEN}`,
+            Authorization: `Bearer ${upstashToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(command),
         });
-        const json = await res.json() as { result: unknown };
+        const json = await res.json();
         return json.result;
       }
 
-      function escapeHtml(str: string): string {
+      function escapeHtml(str) {
         return str
           .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
       }
 
-      function renderMessages(messages: Message[]) {
+      function renderMessages(messages) {
         if (!wall) return;
         if (wallLoading) wallLoading.style.display = 'none';
         if (messages.length === 0) {
@@ -673,7 +670,7 @@
       async function loadMessages() {
         try {
           const result = await redisCmd(['LRANGE', LIST_KEY, '0', '-1']);
-          const messages = ((result as string[]) ?? []).map(s => JSON.parse(s) as Message);
+          const messages = (result ?? []).map(s => JSON.parse(s));
           renderMessages(messages);
         } catch (err) {
           console.error('Error loading messages:', err);
@@ -681,14 +678,13 @@
         }
       }
 
-      form?.addEventListener('submit', async (e) => {
+      form && form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!form) return;
 
         const formData = new FormData(form);
-        const isPublic = makePublicCheckbox?.checked ?? false;
-        const name = (formData.get('name') as string)?.trim();
-        const message = (formData.get('message') as string)?.trim();
+        const isPublic = makePublicCheckbox ? makePublicCheckbox.checked : false;
+        const name = (formData.get('name') || '').trim();
+        const message = (formData.get('message') || '').trim();
 
         try {
           const res = await fetch(form.action, {
