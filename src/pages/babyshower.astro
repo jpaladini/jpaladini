@@ -241,6 +241,66 @@
       .form-success { background: #fce7f3; color: #9d174d; border: 1px solid #fbcfe8; }
       .form-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
+      /* ── Public checkbox ── */
+      .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #7c3f5e;
+        line-height: 1.4;
+      }
+      .checkbox-input {
+        accent-color: #ec4899;
+        width: 1rem;
+        height: 1rem;
+        margin-top: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* ── Wall of Encouragement ── */
+      .wall-subtitle {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #be185d;
+        font-style: italic;
+        margin-bottom: 1.25rem;
+      }
+      .wall-loading, .wall-empty {
+        text-align: center;
+        font-size: 0.875rem;
+        color: #be185d;
+        padding: 1rem 0;
+        font-style: italic;
+      }
+      .message-wall {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+      .msg-card {
+        background: #fdf6f0;
+        border: 1px solid #fbcfe8;
+        border-radius: 0.85rem;
+        padding: 1rem 1.25rem;
+      }
+      .msg-text {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: 1rem;
+        color: #5c3347;
+        line-height: 1.55;
+        margin-bottom: 0.4rem;
+      }
+      .msg-name {
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        color: #be185d;
+        text-align: right;
+      }
+
       /* ── Registry ── */
       .registry-note {
         text-align: center;
@@ -484,6 +544,13 @@
             <textarea class="form-textarea" id="message" name="message" placeholder="Share a well wish or a note…"></textarea>
           </div>
 
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input class="checkbox-input" type="checkbox" id="make-public" name="make_public" />
+              <span>Share my note on Amy's <em>Wall of Encouragement</em> so others can see it 💕</span>
+            </label>
+          </div>
+
           <button type="submit" class="btn-rsvp">Send RSVP &nbsp;🌸</button>
 
           <div id="form-success" class="form-success" role="alert">
@@ -519,6 +586,15 @@
         </div>
       </section>
 
+      <!-- Wall of Encouragement -->
+      <section class="card" aria-labelledby="wall-heading">
+        <h3 id="wall-heading" class="card-title">Wall of Encouragement 💕</h3>
+        <p class="wall-subtitle">Kind words from those who love Amy</p>
+        <p id="wall-loading" class="wall-loading">Loading messages…</p>
+        <p id="wall-empty" class="wall-empty" style="display:none;">Be the first to leave a message!</p>
+        <div id="message-wall" class="message-wall"></div>
+      </section>
+
     </main>
 
     <!-- ── Footer ── -->
@@ -544,35 +620,100 @@
     <div class="page-border-bottom"></div>
 
     <script>
+      const UPSTASH_URL = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_URL as string;
+      const UPSTASH_TOKEN = import.meta.env.PUBLIC_UPSTASH_REDIS_REST_TOKEN as string;
+      const LIST_KEY = 'baby_shower_messages';
+
       const form = document.getElementById('rsvp-form') as HTMLFormElement | null;
       const successMsg = document.getElementById('form-success');
       const errorMsg = document.getElementById('form-error');
+      const makePublicCheckbox = document.getElementById('make-public') as HTMLInputElement | null;
+      const wall = document.getElementById('message-wall');
+      const wallEmpty = document.getElementById('wall-empty');
+      const wallLoading = document.getElementById('wall-loading');
+
+      interface Message { name: string; message: string; ts: number; }
+
+      async function redisCmd(command: (string | number)[]) {
+        const res = await fetch(UPSTASH_URL, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${UPSTASH_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(command),
+        });
+        const json = await res.json() as { result: unknown };
+        return json.result;
+      }
+
+      function escapeHtml(str: string): string {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      }
+
+      function renderMessages(messages: Message[]) {
+        if (!wall) return;
+        if (wallLoading) wallLoading.style.display = 'none';
+        if (messages.length === 0) {
+          if (wallEmpty) wallEmpty.style.display = 'block';
+          wall.innerHTML = '';
+          return;
+        }
+        if (wallEmpty) wallEmpty.style.display = 'none';
+        wall.innerHTML = messages.map(m => `
+          <div class="msg-card">
+            <p class="msg-text">"${escapeHtml(m.message)}"</p>
+            <p class="msg-name">— ${escapeHtml(m.name)}</p>
+          </div>
+        `).join('');
+      }
+
+      async function loadMessages() {
+        try {
+          const result = await redisCmd(['LRANGE', LIST_KEY, '0', '-1']);
+          const messages = ((result as string[]) ?? []).map(s => JSON.parse(s) as Message);
+          renderMessages(messages);
+        } catch (err) {
+          console.error('Error loading messages:', err);
+          if (wallLoading) wallLoading.style.display = 'none';
+        }
+      }
 
       form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!form) return;
 
-        const data = new FormData(form);
+        const formData = new FormData(form);
+        const isPublic = makePublicCheckbox?.checked ?? false;
+        const name = (formData.get('name') as string)?.trim();
+        const message = (formData.get('message') as string)?.trim();
 
         try {
           const res = await fetch(form.action, {
             method: 'POST',
-            body: data,
+            body: formData,
             headers: { Accept: 'application/json' },
           });
+          if (!res.ok) throw new Error('Formspree error');
 
-          if (res.ok) {
-            form.reset();
-            if (successMsg) successMsg.style.display = 'block';
-            if (errorMsg) errorMsg.style.display = 'none';
-          } else {
-            throw new Error('Server error');
+          if (isPublic && name && message) {
+            const entry = JSON.stringify({ name, message, ts: Date.now() });
+            await redisCmd(['LPUSH', LIST_KEY, entry]);
+            await loadMessages();
           }
+
+          form.reset();
+          if (successMsg) successMsg.style.display = 'block';
+          if (errorMsg) errorMsg.style.display = 'none';
         } catch {
           if (errorMsg) errorMsg.style.display = 'block';
           if (successMsg) successMsg.style.display = 'none';
         }
       });
+
+      loadMessages();
     </script>
   </body>
 </html>
