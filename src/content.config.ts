@@ -7,8 +7,11 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
+    category: z.string().default('Notes'),
+    readingTime: z.string().default('5 min'),
     tags: z.array(z.string()).default([]),
     author: z.string().default('Jason Paladini'),
+    featured: z.boolean().default(false),
     draft: z.boolean().default(false),
   }),
 });

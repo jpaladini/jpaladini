@@ -2,6 +2,8 @@
 title: "Building ADO Companion: a web-first Azure DevOps app on Databricks"
 description: "How I designed, built, redesigned, and shipped a React + FastAPI Azure DevOps companion onto Databricks Apps — with an AI-assisted CI/CD path and the five bugs I hit before first deploy."
 date: 2026-06-29
+category: "Case study"
+readingTime: "12 min"
 tags: [databricks, azure-devops, react, fastapi, ci-cd, devops, asset-bundles, claude-code]
 author: Jason Paladini
 draft: false
