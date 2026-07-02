@@ -6,7 +6,7 @@ category: "AI agents"
 readingTime: "11 min"
 tags: [databricks, azure-devops, ai-agents, tool-calling, fmapi, genie, fastapi, llm]
 author: "Jason Paladini"
-draft: true
+draft: false
 series: "Building ADO Companion"
 part: 3
 ---
