@@ -1,0 +1,261 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+
+// Pick a related post: the most recent other post.
+const others = (await getCollection('blog', ({ data }) => !data.draft))
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const related = others[0] ?? null;
+---
+
+<MainLayout
+  title={`${post.data.title} — Jason Paladini`}
+  description={post.data.description}
+  active="blog"
+>
+  <!-- Article header -->
+  <header class="border-b border-white/[0.07]">
+    <div class="max-w-article mx-auto px-8 pt-[60px] pb-11">
+      <a href="/blog" class="font-mono text-xs text-accent no-underline hover:text-accent-bright transition-colors">← All posts</a>
+      <div class="mt-[26px] font-mono text-[11px] text-accent uppercase tracking-[0.16em]">{post.data.category}</div>
+      <h1 class="mt-4 mb-0 font-bold text-[clamp(32px,5vw,46px)] leading-[1.06] tracking-[-0.025em]">{post.data.title}</h1>
+      <div class="flex items-center gap-3.5 mt-6 font-mono text-xs text-text-faint">
+        <span>{post.data.author}</span><span>·</span>
+        <time datetime={post.data.date.toISOString()}>{monthFmt.format(post.data.date)}</time>
+        <span>·</span><span>{post.data.readingTime} read</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Article body -->
+  <article class="max-w-article mx-auto px-8 pt-12 pb-6">
+    <div class="post-body">
+      <Content />
+    </div>
+
+    {post.data.tags.length > 0 && (
+      <div class="mt-10 pt-7 border-t border-white/[0.09] flex gap-3 items-center flex-wrap">
+        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.12em]">Filed under</span>
+        {post.data.tags.map((tag) => (
+          <span class="font-mono text-[11px] text-text-3 px-2.5 py-1.5 border border-white/[0.12] rounded-[20px]">{tag}</span>
+        ))}
+      </div>
+    )}
+  </article>
+
+  {related && (
+    <section class="max-w-article mx-auto px-8 pt-6 pb-20">
+      <a href={`/blog/${related.id}`} class="no-underline text-text block p-[26px] px-7 border border-white/[0.09] rounded-[14px] bg-panel transition-colors hover:border-accent/40">
+        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.14em]">Related ·</span>
+        <div class="font-semibold text-xl leading-[1.25] mt-2.5">{related.data.title}</div>
+        <div class="text-sm leading-[1.5] text-text-3 mt-1.5">{related.data.description}</div>
+      </a>
+    </section>
+  )}
+</MainLayout>
+
+<!-- Render mermaid code fences (converted to <pre class="mermaid"> at build time) as diagrams. -->
+<script>
+  import mermaid from 'mermaid';
+
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'strict',
+    fontFamily: '"Space Grotesk", ui-sans-serif, system-ui, sans-serif',
+    themeVariables: {
+      background: '#0c0f13',
+      primaryColor: '#0c0f13',
+      primaryTextColor: '#e6edf0',
+      lineColor: '#3a4a4f',
+      fontFamily: '"Space Grotesk", sans-serif',
+    },
+  });
+
+  const nodes = document.querySelectorAll('.mermaid');
+  if (nodes.length) {
+    mermaid.run({ nodes: Array.from(nodes) as HTMLElement[] });
+  }
+</script>
+
+<style is:global>
+  /* Dark long-form prose, scoped to .post-body. Inline-styled HTML blocks in
+     the markdown (architecture boxes, the prompt_registry table) override
+     these defaults via their own styles. */
+  .post-body {
+    color: #aebbc0;
+    font-size: 17px;
+    line-height: 1.72;
+  }
+
+  .post-body p {
+    margin: 0 0 22px;
+  }
+
+  /* Lead paragraph */
+  .post-body > p:first-of-type {
+    font-size: 18.5px;
+    line-height: 1.75;
+    color: #cfd8db;
+    margin-bottom: 24px;
+  }
+
+  .post-body h2 {
+    margin: 42px 0 14px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #e6edf0;
+  }
+
+  .post-body h3 {
+    margin: 32px 0 12px;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #e6edf0;
+  }
+
+  .post-body ul,
+  .post-body ol {
+    margin: 22px 0;
+    padding-left: 1.4rem;
+  }
+  .post-body ul { list-style: disc; }
+  .post-body ol { list-style: decimal; }
+  .post-body li { margin: 0.5rem 0; }
+  .post-body li::marker { color: #6ee7c7; }
+
+  .post-body a {
+    color: #6ee7c7;
+    text-decoration: none;
+  }
+  .post-body a:hover {
+    color: #8af0d6;
+  }
+
+  .post-body strong {
+    font-weight: 600;
+    color: #e6edf0;
+  }
+  .post-body em { font-style: italic; }
+
+  /* Pull-quote (markdown blockquote) */
+  .post-body blockquote {
+    margin: 34px 0;
+    padding: 24px 26px;
+    border-left: 3px solid #6ee7c7;
+    background: rgba(110, 231, 199, 0.05);
+    border-radius: 0 10px 10px 0;
+  }
+  .post-body blockquote p {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: #e6edf0;
+  }
+
+  /* Inline code chip */
+  .post-body :not(pre) > code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cffaed;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* Code blocks */
+  .post-body pre {
+    margin: 28px 0;
+    padding: 18px 16px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    background: #0c0f13;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #c4d0d4;
+  }
+  .post-body pre code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  /* Mermaid diagrams render to SVG; drop the code-block chrome. */
+  .post-body pre.mermaid {
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: center;
+  }
+
+  /* Tables */
+  .post-body table {
+    width: 100%;
+    margin: 28px 0;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  .post-body th,
+  .post-body td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: top;
+    color: #aebbc0;
+  }
+  .post-body th {
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 600;
+    color: #e6edf0;
+  }
+
+  /* Image placeholders (swap these out for real screenshots) */
+  .post-body figure.img-placeholder {
+    margin: 28px 0;
+    padding: 2rem 1.25rem;
+    border: 1px solid rgba(110, 231, 199, 0.18);
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+      135deg,
+      rgba(110, 231, 199, 0.07),
+      rgba(110, 231, 199, 0.07) 8px,
+      transparent 8px,
+      transparent 16px
+    );
+    text-align: center;
+  }
+  .post-body figure.img-placeholder span {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.78rem;
+    color: #6a7b81;
+  }
+
+  /* Horizontal rule */
+  .post-body hr {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+</style>

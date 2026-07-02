@@ -1,299 +1,120 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 
-// Project showcase with detailed information
 const projects = [
   {
-    id: 'pbi-snowflake-compare',
+    num: '01',
     title: 'Power BI vs Snowflake Comparison',
-    description: 'Performance and feature comparison between Power BI semantic models and Snowflake. Demonstrates data modeling strategies, query optimization techniques, and cost analysis across platforms.',
-    keyFeatures: [
-      'Side-by-side performance benchmarking',
-      'Query optimization insights',
-      'Cost analysis and TCO comparison',
-    ],
-    technologies: ['Streamlit', 'Python', 'Power BI', 'Snowflake', 'Data Engineering'],
+    description: 'Performance and feature comparison between Power BI semantic models and Snowflake. Modeling strategies, query optimization and cost analysis across platforms.',
+    features: ['Side-by-side benchmarking', 'Query optimization insights', 'TCO comparison'],
+    tags: ['Streamlit', 'Python', 'Power BI', 'Snowflake'],
     url: 'https://jphzn-pbi-snwflk-compare-20260125.streamlit.app/',
-    screenshot: '/projects/pbi-snowflake.png', // placeholder
-    status: 'active',
   },
   {
-    id: 'pbi-model-explorer',
+    num: '02',
     title: 'Power BI Model Explorer',
-    description: 'Interactive exploration of Power BI semantic models and dbt relationships. Visualizes data lineage, model dependencies, and metadata for data engineering workflows. Built to help teams understand complex data models.',
-    keyFeatures: [
-      'dbt model lineage visualization',
-      'Power BI relationship mapping',
-      'Metadata exploration and analysis',
-    ],
-    technologies: ['Streamlit', 'Python', 'dbt', 'Power BI', 'Data Engineering'],
+    description: 'Interactive exploration of Power BI semantic models and dbt relationships. Visualizes lineage, dependencies and metadata to help teams understand complex data models.',
+    features: ['dbt model lineage', 'Relationship mapping', 'Metadata analysis'],
+    tags: ['Streamlit', 'dbt', 'Power BI'],
     url: 'https://jp-pbi-model-explorer.streamlit.app/',
-    screenshot: '/projects/model-explorer.png', // placeholder
-    status: 'active',
   },
   {
-    id: 'data-profiling',
+    num: '03',
     title: 'Data Profiling Tool',
-    description: 'Automated data quality assessment and profiling. Analyzes datasets for statistical patterns, null values, data type validation, and quality issues. Helps data engineers quickly understand new data sources.',
-    keyFeatures: [
-      'Statistical analysis and distributions',
-      'Data quality metrics and alerts',
-      'Null detection and type validation',
-    ],
-    technologies: ['Streamlit', 'Python', 'Data Quality', 'Data Engineering'],
+    description: 'Automated data quality assessment and profiling. Analyzes datasets for statistical patterns, null values, type validation and quality issues — quick understanding of new data sources.',
+    features: ['Statistical distributions', 'Quality metrics & alerts', 'Null & type validation'],
+    tags: ['Streamlit', 'Python', 'Data Quality'],
     url: 'https://jphzn-profiling.streamlit.app/',
-    screenshot: '/projects/profiling.png', // placeholder
-    status: 'active',
   },
   {
-    id: 'claims-timeliness',
+    num: '04',
     title: 'Claims Timeliness Dashboard',
-    description: 'Healthcare claims processing KPIs and trend analysis. Tracks processing times, bottlenecks, and operational metrics. Demonstrates domain expertise in healthcare analytics and business intelligence.',
-    keyFeatures: [
-      'Time-series claims analysis',
-      'Processing bottleneck identification',
-      'Operational KPIs and metrics',
-    ],
-    technologies: ['Streamlit', 'Python', 'Business Intelligence', 'Healthcare Analytics'],
+    description: 'Healthcare claims processing KPIs and trend analysis. Tracks processing times, bottlenecks and operational metrics — domain expertise in healthcare analytics and BI.',
+    features: ['Time-series analysis', 'Bottleneck identification', 'Operational KPIs'],
+    tags: ['Streamlit', 'Business Intelligence', 'Healthcare'],
     url: 'https://jp-claims-timeliness.streamlit.app/',
-    screenshot: '/projects/claims.png', // placeholder
-    status: 'active',
   },
   {
-    id: 'sra-timeline',
+    num: '05',
     title: 'SRA Timeline',
-    description: 'Strategic roadmap and milestone tracking visualization. Interactive timeline for project planning, dependency management, and progress tracking. Shows advanced Streamlit component development.',
-    keyFeatures: [
-      'Interactive timeline visualization',
-      'Milestone and dependency tracking',
-      'Strategic planning interface',
-    ],
-    technologies: ['Streamlit', 'Python', 'Data Visualization'],
+    description: 'Strategic roadmap and milestone tracking visualization. An interactive timeline for project planning, dependency management and progress tracking — advanced Streamlit component work.',
+    features: ['Interactive timeline', 'Milestone & dependency tracking', 'Planning interface'],
+    tags: ['Streamlit', 'Python', 'Data Visualization'],
     url: 'https://jphzn-sra-timeline.streamlit.app/',
-    screenshot: '/projects/timeline.png', // placeholder
-    status: 'active',
   },
   {
-    id: 'chess',
+    num: '06',
     title: 'Chess Game',
-    description: 'Interactive chess application with move validation and game state management. Demonstrates algorithmic thinking, state management patterns, and interactive UI development in Streamlit.',
-    keyFeatures: [
-      'Complete chess logic and validation',
-      'Interactive game state management',
-      'Clean UI/UX design',
-    ],
-    technologies: ['Streamlit', 'Python'],
+    description: 'Interactive chess application with move validation and game-state management. A change of pace — algorithmic thinking, state patterns and interactive UI in Streamlit.',
+    features: ['Complete chess logic', 'Game-state management', 'Clean UI/UX'],
+    tags: ['Streamlit', 'Python'],
     url: 'https://jp-chess.streamlit.app/',
-    screenshot: '/projects/chess.png', // placeholder
-    status: 'active',
   },
 ];
 
-// Extract all unique technologies for the chart
-const allTechnologies = [...new Set(projects.flatMap(p => p.technologies))];
-const techCounts = allTechnologies.map(tech => ({
-  name: tech,
-  count: projects.filter(p => p.technologies.includes(tech)).length
-})).sort((a, b) => b.count - a.count);
+const techBars = [
+  { label: 'Streamlit', count: '6 projects', width: '100%', opacity: 1 },
+  { label: 'Python', count: '5 projects', width: '83%', opacity: 1 },
+  { label: 'Data Engineering', count: '3 projects', width: '50%', opacity: 0.6 },
+  { label: 'Power BI', count: '2 projects', width: '33%', opacity: 0.6 },
+  { label: 'Snowflake · dbt · BI', count: '1 each', width: '18%', opacity: 0.4 },
+];
 ---
 
 <MainLayout
-  title="Projects - Jason Paladini"
-  description="Projects by Jason Paladini"
+  title="Projects — Jason Paladini"
+  description="Data engineering tools and analytics applications by Jason Paladini, built with Streamlit and deployed live."
+  active="projects"
 >
-  <div class="max-w-7xl mx-auto px-6 py-12 sm:py-16">
-    <!-- Breadcrumb -->
-    <nav aria-label="Breadcrumb" class="mb-6 text-sm">
-      <a href="/" class="text-blue-600 dark:text-blue-400 underline font-medium hover:text-blue-700 dark:hover:text-blue-300">Home</a>
-      <span class="mx-2 text-gray-400">/</span>
-      <span class="text-gray-600 dark:text-gray-400">Projects</span>
-    </nav>
+  <!-- Header -->
+  <header class="border-b border-white/[0.07] grid-texture">
+    <div class="max-w-content mx-auto px-8 pt-16 pb-[52px]">
+      <div class="font-mono text-xs text-text-faint mb-[18px]">
+        <a href="/" class="text-accent no-underline">~/</a> / projects
+      </div>
+      <h1 class="m-0 font-bold text-[clamp(40px,6vw,64px)] leading-[1.0] tracking-[-0.03em]">Projects</h1>
+      <p class="mt-5 max-w-[560px] text-[17px] leading-[1.55] text-text-3">
+        Data engineering tools and analytics applications, built with Streamlit and deployed live. Each one is open to try.
+      </p>
+    </div>
+  </header>
 
-    <header class="mb-12">
-      <h1 class="text-3xl sm:text-4xl font-bold mb-2">Projects</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">Data engineering tools and analytics applications built with Streamlit</p>
-    </header>
-
-    <!-- Projects Grid - 2 columns on desktop, wider cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
-      {projects.map((project) => (
-        <a
-          href={project.status === 'active' ? project.url : '#'}
-          target={project.status === 'active' ? '_blank' : undefined}
-          rel={project.status === 'active' ? 'noopener noreferrer' : undefined}
-          class={`group block bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all overflow-hidden ${
-            project.status === 'active'
-              ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer'
-              : 'opacity-60 cursor-not-allowed'
-          }`}
-          aria-disabled={project.status !== 'active'}
-        >
-          <!-- Horizontal Layout: Screenshot Left, Content Right -->
-          <div class="flex flex-col sm:flex-row">
-            <!-- Screenshot Placeholder -->
-            <div class="w-full sm:w-48 h-48 sm:h-auto bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-slate-800 flex items-center justify-center flex-shrink-0">
-              <svg class="w-16 h-16 text-blue-400 dark:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-            </div>
-
-            <!-- Content Area -->
-            <div class="flex-1 p-6 flex flex-col">
-              <!-- Title and Tags -->
-              <div class="mb-3">
-                <h2 class="text-xl font-bold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {project.title}
-                </h2>
-                <div class="flex flex-wrap gap-1.5">
-                  {project.technologies.map(tech => (
-                    <span class="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <!-- Description -->
-              <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 flex-grow">
-                {project.description}
-              </p>
-
-              <!-- View Project Link -->
-              {project.status === 'active' && (
-                <div class="flex items-center text-blue-600 dark:text-blue-400 text-sm font-medium">
-                  <span>View Project</span>
-                  <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </div>
-              )}
-            </div>
+  <!-- Project list -->
+  <section class="max-w-content mx-auto px-8 pt-16 pb-6 flex flex-col gap-5">
+    {projects.map((p) => (
+      <a href={p.url} target="_blank" rel="noopener" class="no-underline text-text grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-[30px] p-[30px] border border-white/[0.09] rounded-2xl bg-panel items-center transition-colors hover:border-accent/40 hover:bg-panel-hover">
+        <div class="stripe-placeholder aspect-[4/3] rounded-[10px] flex items-center justify-center font-mono text-[10px] leading-[1.4] text-text-faint text-center p-2.5">app screenshot</div>
+        <div>
+          <div class="flex justify-between items-baseline gap-3">
+            <h2 class="m-0 font-semibold text-2xl leading-[1.1]">{p.title}</h2>
+            <span class="font-mono font-medium text-xs text-accent flex-none">{p.num} ↗</span>
           </div>
-        </a>
+          <p class="mt-2.5 mb-3.5 text-[14.5px] leading-[1.55] text-text-3 max-w-[640px]">{p.description}</p>
+          <div class="flex flex-wrap gap-x-3.5 gap-y-1.5 mb-3.5 text-[13px] leading-[1.4] text-text-2">
+            {p.features.map((f) => (<span>· {f}</span>))}
+          </div>
+          <div class="flex flex-wrap gap-1.5 font-mono text-[11px] font-medium text-text-dim">
+            {p.tags.map((t) => (
+              <span class="px-[9px] py-[5px] border border-white/10 rounded-[5px]">{t}</span>
+            ))}
+          </div>
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <!-- Tech stack summary -->
+  <section class="max-w-content mx-auto px-8 pt-16 pb-6">
+    <h2 class="mt-0 mb-2 font-bold text-[26px] leading-[1.1] tracking-[-0.01em]">Technology stack</h2>
+    <p class="mt-0 mb-7 text-[15px] leading-[1.5] text-text-3">Across these projects, by frequency.</p>
+    <div class="border border-white/[0.09] rounded-2xl bg-panel p-7 flex flex-col gap-4">
+      {techBars.map((bar) => (
+        <div class="grid grid-cols-[110px_1fr_70px] sm:grid-cols-[160px_1fr_90px] gap-3.5 items-center">
+          <span class="font-mono text-[13px] text-text-2">{bar.label}</span>
+          <div class="h-3 rounded-md bg-accent" style={`width:${bar.width};opacity:${bar.opacity}`}></div>
+          <span class="font-mono text-xs text-text-faint text-right">{bar.count}</span>
+        </div>
       ))}
     </div>
-
-    <!-- Technology Stack Visualization Section -->
-    <section class="mt-16 pt-12 border-t border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-bold mb-6">Technology Stack</h2>
-      <p class="text-gray-600 dark:text-gray-400 mb-8">
-        Skills and technologies used across all projects
-      </p>
-
-      <!-- D3 Bar Chart Container -->
-      <div id="tech-stack-viz" class="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8">
-        <div id="bar-chart"></div>
-      </div>
-
-      <!-- Data for d3 (hidden, available for JavaScript) -->
-      <script type="application/json" id="tech-data" set:html={JSON.stringify(techCounts)} />
-    </section>
-  </div>
-
-  <!-- D3 Bar Chart Script -->
-  <script is:inline src="https://d3js.org/d3.v7.min.js"></script>
-  <script is:inline>
-    // Wait for d3 to load and DOM to be ready
-    window.addEventListener('load', function() {
-      if (typeof d3 === 'undefined') {
-        console.error('D3.js failed to load');
-        return;
-      }
-
-      // Parse tech data from JSON
-      const techData = JSON.parse(document.getElementById('tech-data').textContent);
-
-      // Chart dimensions and configuration
-      const margin = { top: 20, right: 120, bottom: 40, left: 180 };
-      const width = Math.min(900, window.innerWidth - 100) - margin.left - margin.right;
-      const height = techData.length * 40;
-
-      // Detect dark mode
-      const isDarkMode = document.documentElement.classList.contains('dark');
-
-      // Color scheme
-      const barColor = '#2563eb'; // blue-600
-      const barHoverColor = '#1d4ed8'; // blue-700
-      const textColor = isDarkMode ? '#e5e7eb' : '#374151'; // gray-200 : gray-700
-      const labelColor = isDarkMode ? '#9ca3af' : '#6b7280'; // gray-400 : gray-500
-
-      // Create SVG
-      const svg = d3.select('#bar-chart')
-        .append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      // Create scales
-      const x = d3.scaleLinear()
-        .domain([0, d3.max(techData, d => d.count)])
-        .range([0, width]);
-
-      const y = d3.scaleBand()
-        .domain(techData.map(d => d.name))
-        .range([0, height])
-        .padding(0.2);
-
-      // Add bars
-      svg.selectAll('.bar')
-        .data(techData)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar')
-        .attr('x', 0)
-        .attr('y', d => y(d.name))
-        .attr('width', d => x(d.count))
-        .attr('height', y.bandwidth())
-        .attr('fill', barColor)
-        .attr('rx', 4)
-        .on('mouseover', function() {
-          d3.select(this).attr('fill', barHoverColor);
-        })
-        .on('mouseout', function() {
-          d3.select(this).attr('fill', barColor);
-        });
-
-      // Add labels (technology names)
-      svg.selectAll('.label')
-        .data(techData)
-        .enter()
-        .append('text')
-        .attr('class', 'label')
-        .attr('x', -10)
-        .attr('y', d => y(d.name) + y.bandwidth() / 2)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', 'end')
-        .attr('fill', textColor)
-        .attr('font-size', '14px')
-        .attr('font-weight', '500')
-        .text(d => d.name);
-
-      // Add count labels (on the bars)
-      svg.selectAll('.count')
-        .data(techData)
-        .enter()
-        .append('text')
-        .attr('class', 'count')
-        .attr('x', d => x(d.count) + 10)
-        .attr('y', d => y(d.name) + y.bandwidth() / 2)
-        .attr('dy', '0.35em')
-        .attr('fill', labelColor)
-        .attr('font-size', '13px')
-        .attr('font-weight', '600')
-        .text(d => `${d.count} project${d.count > 1 ? 's' : ''}`);
-
-      // Add x-axis
-      svg.append('g')
-        .attr('transform', `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(Math.min(6, d3.max(techData, d => d.count))))
-        .attr('color', labelColor)
-        .selectAll('text')
-        .attr('fill', labelColor);
-
-      // Style axis
-      svg.selectAll('.domain, .tick line')
-        .attr('stroke', isDarkMode ? '#4b5563' : '#d1d5db');
-    });
-  </script>
+  </section>
 </MainLayout>
