@@ -13,7 +13,9 @@ part: 1
 ---
 > A field report on turning a mobile Azure DevOps client into a **web-first app hosted on Databricks**, with a fully automated GitHub → Azure DevOps → Databricks delivery pipeline — built in a single pairing session with Claude Code.
 
-<!-- 📸 Screenshot slot — HERO: The Overview dashboard in light mode (the four KPI cards, the pipeline bar chart, the donut, and the recent-items table). This is the money shot; put it right under the title. -->
+![ADO Companion — the Overview dashboard in light mode: four KPI cards with sparklines, the pipeline bar chart, the work-items-by-state donut, and the recent-items table](/images/blog/ado-companion/analytics-overview-light.png)
+
+*The Overview dashboard, live on Databricks Apps — KPI cards with sparklines, pipeline runs, work items by state, and recent items, all read from Azure DevOps through the BFF.*
 
 ---
 
@@ -129,7 +131,9 @@ This is where it stopped being a viewer:
 
 Every mutation goes through the FastAPI BFF, then invalidates the relevant TanStack Query so the UI reflects the new truth, with per-row error surfacing.
 
-<!-- 📸 Screenshot slot: The Work Items table showing the editable state pills (the colored dropdowns) and a comment composer open below the table. -->
+![The Work Items tab with editable state dropdowns on each row, filter chips, and a New item button](/images/blog/ado-companion/work-items-state-pills.png)
+
+*Write-back in the Work Items tab: each row's state is an inline dropdown that PATCHes straight back to Azure DevOps.*
 
 ---
 
@@ -143,9 +147,13 @@ The first cut was a centered single card. The redesign turned it into a product:
 
 Everything is driven by a **design-token system** (light/dark values for ~40 tokens) wired into Tailwind, so theming is consistent and a single switch flips the whole app.
 
-<!-- 📸 Screenshot slot — DARK MODE: The Overview dashboard in dark mode (same view as the hero, dark). Pair it visually with the hero to show the theme switch. -->
+![The same Overview dashboard in dark mode — the full token swap applied](/images/blog/ado-companion/overview-dark.png)
 
-<!-- 📸 Screenshot slot: The Pull Requests tab with the Approve / Abandon action buttons and status chips. -->
+*The same dashboard after the theme toggle: one CSS-variable token swap, persisted to localStorage, applied before first paint.*
+
+![The Pull Requests tab showing an active PR with Approve and Abandon action buttons and a status chip](/images/blog/ado-companion/pull-requests-actions.png)
+
+*The Pull Requests tab: Approve casts a reviewer vote, Abandon closes the PR — both written back through the BFF.*
 
 ---
 

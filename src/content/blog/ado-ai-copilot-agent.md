@@ -12,7 +12,11 @@ part: 3
 ---
 > Part 3 of the **ADO Companion** series. Part 1 built the app and the delivery pipeline; Part 2 chose OData for the analytics plane. This one is about the moment the roadmap changed shape: we stopped building a smarter dashboard and started building an **agent** — one that creates work items, cleans up descriptions, and tags a sprint's worth of backlog, with every change gated behind a human click.
 
-<!-- 📸 Screenshot slot — HERO: The AI Copilot tab mid-conversation: read-tool chips at the top of an answer, and a proposal card ("Update work item #4") with Apply / Dismiss buttons. This is the whole thesis in one image. -->
+![The AI Copilot tab: a read-tool chip (read: list_work_items) above a grounded answer about the project's open work items](/images/blog/ado-companion/copilot-read-tools.png)
+
+*The copilot answering from live data: the `read: list_work_items` chip shows exactly which tool grounded the reply. Reads execute freely; every write comes back as a proposal card.*
+
+<!-- 📸 Screenshot slot: still to capture — a conversation with a proposal card ("Update work item #4") showing Apply / Dismiss buttons. -->
 
 ---
 

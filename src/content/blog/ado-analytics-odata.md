@@ -12,12 +12,9 @@ part: 2
 ---
 > Part 2 of the **ADO Companion** series. Part 1 covered building and shipping the app on Databricks. This one is about a single, deceptively deep question: **how do you actually pull the data behind a delivery-metrics dashboard?**
 
-<!-- swap for real screenshot: ![ADO Companion — the Overview analytics dashboard in light mode, showing four KPI cards with sparklines, a pipeline bar chart, a work-items-by-state donut, and a recent-items table](/images/blog/ado-companion/analytics-overview-light.png) -->
-<figure class="img-placeholder">
-  <span>ADO Companion — the Overview analytics dashboard in light mode, showing four KPI cards with sparklines, a pipeline bar chart, a work-items-by-state donut, and a recent-items table</span>
-</figure>
+![ADO Companion — the Overview analytics dashboard in light mode, showing four KPI cards with sparklines, a pipeline bar chart, a work-items-by-state donut, and a recent-items table](/images/blog/ado-companion/analytics-overview-light.png)
 
-*The live dashboard. The **work-items-by-state donut** ("25 total") and the **"Open work items"** KPI (14) are **server-side OData aggregates** — `groupby((StateCategory), aggregate($count as Count))` — not a client-side count of fetched rows. The KPI's **sparkline** and its "25 total · 7d" caption come from a **`WorkItemSnapshot`** daily trend over the selected range.*
+*The live dashboard. The **work-items-by-state donut** ("3 total") and the **"Open work items"** KPI (3) are **server-side OData aggregates** — `groupby((StateCategory), aggregate($count as Count))` — not a client-side count of fetched rows. The KPI's **sparkline** and its "3 total · 7d" caption come from a **`WorkItemSnapshot`** daily trend over the selected range.*
 
 ---
 
@@ -45,7 +42,9 @@ The analytics side wants the opposite: **don't give me the rows, give me the num
 
 If you compute those by pulling every work item and counting in application code, you've turned a one-number question into a thousand-row transfer. That's the trap.
 
-<!-- 📸 Screenshot slot: The work-items-by-state donut with its legend, zoomed in — the canonical "aggregate, not a list" widget. -->
+![The work-items-by-state donut with its legend — a count per state category, not a list of rows](/images/blog/ado-companion/work-items-by-state-donut.png)
+
+*The canonical "aggregate, not a list" widget: one `groupby((StateCategory), aggregate($count as Count))` call, rendered.*
 
 ---
 
@@ -163,7 +162,9 @@ flowchart TD
 
 The time-range control (24h / 7d / 30d) becomes **real** here: it sets the `DateValue` window on the snapshot queries, so the numbers and sparklines actually change with the range — instead of being decorative.
 
-<!-- 📸 Screenshot slot: The Overview header showing the 24h / 7d / 30d segmented control, with a note/caption that it now drives live OData snapshot windows. -->
+![The Overview header with the 24h / 7d / 30d segmented range control](/images/blog/ado-companion/overview-range-control.png)
+
+*The range control is live: switching it sets the `DateValue` window on the `WorkItemSnapshot` queries.*
 
 ---
 
@@ -188,12 +189,9 @@ flowchart LR
   <p>A left-to-right data-flow diagram. On the left, a box "Overview dashboard (React + TanStack Query)" with an arrow labeled "/api/.../analytics?range=" pointing right to a box "FastAPI BFF (Analytics client)." Between the BFF and a blue cylinder labeled "ADO Analytics OData — analytics.dev.azure.com," draw a bold double-headed/round-trip arrow labeled "$apply aggregates + snapshot trends" (request out, aggregated numbers back). Color that cylinder blue = the live path that exists now. Then, from the BFF, a dashed arrow labeled "Phase 3" points down/right to a box "Scheduled Job: OData → Delta," which has a dashed arrow to a purple cylinder "Delta + Genie Space." Finally a dashed arrow labeled "future NL Q&A" goes from the dashboard directly to the Genie cylinder. Visual intent: solid blue = today's live OData aggregation path; dashed purple = the planned lakehouse/Genie extension fed by the same OData source.</p>
 </details>
 
-<!-- swap for real screenshot: ![The same dashboard with the time range set to 30d — the Open KPI caption now reads "25 total · 30d" and the sparkline shows the longer trend window](/images/blog/ado-companion/analytics-overview-30d.png) -->
-<figure class="img-placeholder">
-  <span>The same dashboard with the time range set to 30d — the Open KPI caption now reads "25 total · 30d" and the sparkline shows the longer trend window</span>
-</figure>
+![The same dashboard with the time range set to 30d — the Open KPI caption now reads "3 total · 30d" and the sparkline shows the longer trend window](/images/blog/ado-companion/analytics-overview-30d.png)
 
-*The payoff: switching the range to **30d** refetches the OData snapshot window. The KPI caption becomes **"25 total · 30d"** and the sparkline redraws over the longer trend. The 24h / 7d / 30d control is now **real**, not decorative — it sets the `DateValue` window on the `WorkItemSnapshot` query.*
+*The payoff: switching the range to **30d** refetches the OData snapshot window. The KPI caption becomes **"3 total · 30d"** and the sparkline redraws over the longer trend. The 24h / 7d / 30d control is now **real**, not decorative — it sets the `DateValue` window on the `WorkItemSnapshot` query.*
 
 ---
 
