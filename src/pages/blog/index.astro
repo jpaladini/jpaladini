@@ -1,12 +1,10 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPosts } from '../../lib/blog';
 
 const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+const posts = await getPosts();
 
 // Featured = the flagged post, falling back to the most recent.
 const featured = posts.find((p) => p.data.featured) ?? posts[0];
@@ -36,7 +34,12 @@ const featured = posts.find((p) => p.data.featured) ?? posts[0];
       <a href={`/blog/${featured.id}`} class="no-underline text-text grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-9 p-[34px] border border-accent/25 rounded-[18px] bg-panel items-center transition-colors hover:border-accent/50 relative overflow-hidden">
         <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(500px 260px at 88% 0%,rgba(110,231,199,.1),transparent 70%)"></div>
         <div class="relative">
-          <span class="font-mono text-[11px] text-accent uppercase tracking-[0.16em]">Latest · {featured.data.category}</span>
+          <span class="font-mono text-[11px] text-accent uppercase tracking-[0.16em]">
+            Latest · {featured.data.category}
+            {featured.data.draft && (
+              <span class="ml-3 normal-case tracking-normal text-[10px] text-amber-300 border border-amber-300/40 rounded px-1.5 py-0.5">draft</span>
+            )}
+          </span>
           <h2 class="mt-3.5 mb-0 font-bold text-[clamp(26px,3.2vw,36px)] leading-[1.1] tracking-[-0.02em]">{featured.data.title}</h2>
           <p class="mt-4 text-base leading-[1.6] text-text-3">{featured.data.description}</p>
           <div class="flex items-center gap-3.5 mt-[22px] font-mono text-xs text-text-faint">
@@ -55,10 +58,15 @@ const featured = posts.find((p) => p.data.featured) ?? posts[0];
     {posts.map((post) => (
       <a href={`/blog/${post.id}`} class="no-underline text-text grid grid-cols-1 sm:grid-cols-[130px_1fr_auto] gap-7 sm:items-baseline py-7 border-t border-white/[0.09] last:border-b group">
         <span class="font-mono text-xs leading-[1.4] text-text-faint">
-          {monthFmt.format(post.data.date)}<br /><span class="text-[#4a5a5f]">{post.data.category}</span>
+          {monthFmt.format(post.data.date)}<br /><span class="text-[#4a5a5f]">{post.data.part ? `Part ${post.data.part}` : post.data.category}</span>
         </span>
         <div>
-          <h3 class="m-0 font-semibold text-[22px] leading-tight group-hover:text-accent transition-colors">{post.data.title}</h3>
+          <h3 class="m-0 font-semibold text-[22px] leading-tight group-hover:text-accent transition-colors">
+            {post.data.title}
+            {post.data.draft && (
+              <span class="ml-2.5 align-middle font-mono font-normal text-[10px] text-amber-300 border border-amber-300/40 rounded px-1.5 py-0.5 whitespace-nowrap">draft</span>
+            )}
+          </h3>
           <p class="mt-2 text-[14.5px] leading-[1.55] text-text-3 max-w-[680px]">{post.data.description}</p>
         </div>
         <span class="font-mono text-xs text-text-faint whitespace-nowrap">{post.data.readingTime} →</span>

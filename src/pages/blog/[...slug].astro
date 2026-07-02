@@ -1,9 +1,10 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
+import { getPosts } from '../../lib/blog';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
@@ -15,11 +16,21 @@ const { Content } = await render(post);
 
 const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
 
-// Pick a related post: the most recent other post.
-const others = (await getCollection('blog', ({ data }) => !data.draft))
-  .filter((p) => p.id !== post.id)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const related = others[0] ?? null;
+const all = await getPosts();
+
+// Posts in the same series, ordered by part number.
+const seriesPosts = post.data.series
+  ? all
+      .filter((p) => p.data.series === post.data.series)
+      .sort((a, b) => (a.data.part ?? 0) - (b.data.part ?? 0))
+  : [];
+const seriesIndex = seriesPosts.findIndex((p) => p.id === post.id);
+const prevPart = seriesIndex > 0 ? seriesPosts[seriesIndex - 1] : null;
+const nextPart = seriesIndex >= 0 && seriesIndex < seriesPosts.length - 1 ? seriesPosts[seriesIndex + 1] : null;
+
+// Pick a related post: next in series, else the most recent other post.
+const others = all.filter((p) => p.id !== post.id && p.data.series !== post.data.series);
+const related = nextPart ?? others[0] ?? null;
 ---
 
 <MainLayout
@@ -31,7 +42,12 @@ const related = others[0] ?? null;
   <header class="border-b border-white/[0.07]">
     <div class="max-w-article mx-auto px-8 pt-[60px] pb-11">
       <a href="/blog" class="font-mono text-xs text-accent no-underline hover:text-accent-bright transition-colors">← All posts</a>
-      <div class="mt-[26px] font-mono text-[11px] text-accent uppercase tracking-[0.16em]">{post.data.category}</div>
+      <div class="mt-[26px] font-mono text-[11px] text-accent uppercase tracking-[0.16em]">
+        {post.data.series ? `${post.data.series} · Part ${post.data.part}` : post.data.category}
+        {post.data.draft && (
+          <span class="ml-3 normal-case tracking-normal text-[10px] text-amber-300 border border-amber-300/40 rounded px-1.5 py-0.5">draft — hidden in production</span>
+        )}
+      </div>
       <h1 class="mt-4 mb-0 font-bold text-[clamp(32px,5vw,46px)] leading-[1.06] tracking-[-0.025em]">{post.data.title}</h1>
       <div class="flex items-center gap-3.5 mt-6 font-mono text-xs text-text-faint">
         <span>{post.data.author}</span><span>·</span>
@@ -56,6 +72,29 @@ const related = others[0] ?? null;
       </div>
     )}
   </article>
+
+  {seriesPosts.length > 1 && (
+    <section class="max-w-article mx-auto px-8 pt-2 pb-4">
+      <div class="p-[26px] px-7 border border-white/[0.09] rounded-[14px] bg-panel">
+        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.14em]">{post.data.series} — {seriesPosts.length} parts</span>
+        <ol class="list-none m-0 mt-3.5 p-0 flex flex-col gap-2">
+          {seriesPosts.map((p) => (
+            <li class="m-0">
+              {p.id === post.id ? (
+                <span class="font-mono text-[13px] text-accent">Part {p.data.part} · {p.data.title} ←</span>
+              ) : (
+                <a href={`/blog/${p.id}`} class="font-mono text-[13px] text-text-3 no-underline hover:text-accent transition-colors">Part {p.data.part} · {p.data.title}</a>
+              )}
+            </li>
+          ))}
+        </ol>
+        <div class="flex justify-between mt-5 font-mono text-xs">
+          <span>{prevPart && <a href={`/blog/${prevPart.id}`} class="text-accent no-underline">← Part {prevPart.data.part}</a>}</span>
+          <span>{nextPart && <a href={`/blog/${nextPart.id}`} class="text-accent no-underline">Part {nextPart.data.part} →</a>}</span>
+        </div>
+      </div>
+    </section>
+  )}
 
   {related && (
     <section class="max-w-article mx-auto px-8 pt-6 pb-20">
@@ -257,5 +296,31 @@ const related = others[0] ?? null;
     margin: 40px 0;
     border: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  /* Post images (screenshots) */
+  .post-body img {
+    display: block;
+    max-width: 100%;
+    margin: 28px auto 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Collapsed text alternative for a rendered diagram */
+  .post-body details.diagram-note {
+    margin: -14px 0 28px;
+  }
+  .post-body details.diagram-note summary {
+    cursor: pointer;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11.5px;
+    color: #6a7b81;
+  }
+  .post-body details.diagram-note p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #8a989e;
   }
 </style>

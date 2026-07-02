@@ -13,6 +13,8 @@ const blog = defineCollection({
     author: z.string().default('Jason Paladini'),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    series: z.string().optional(),
+    part: z.number().optional(),
   }),
 });
 
