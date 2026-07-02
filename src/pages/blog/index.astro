@@ -35,7 +35,7 @@ const featured = posts.find((p) => p.data.featured) ?? posts[0];
         <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(500px 260px at 88% 0%,rgba(110,231,199,.1),transparent 70%)"></div>
         <div class="relative">
           <span class="font-mono text-[11px] text-accent uppercase tracking-[0.16em]">
-            Latest · {featured.data.category}
+            Featured · {featured.data.category}
             {featured.data.draft && (
               <span class="ml-3 normal-case tracking-normal text-[10px] text-amber-300 border border-amber-300/40 rounded px-1.5 py-0.5">draft</span>
             )}

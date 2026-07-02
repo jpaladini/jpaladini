@@ -7,6 +7,7 @@ readingTime: "15 min"
 tags: [databricks, azure-devops, react, fastapi, ci-cd, devops, asset-bundles, claude-code]
 author: "Jason Paladini"
 draft: false
+featured: true
 series: "Building ADO Companion"
 part: 1
 ---
