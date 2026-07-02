@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPosts } from '../lib/blog';
 
 const projects = [
   {
@@ -80,9 +80,7 @@ const featuredBullets = [
 ];
 
 // Two most recent posts for the "From the blog" teasers.
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 2);
+const posts = (await getPosts()).slice(0, 2);
 
 const eyebrow = 'font-mono text-[13px] font-semibold uppercase tracking-eyebrow text-accent';
 ---
