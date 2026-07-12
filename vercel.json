@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/emma-game",
+      "destination": "/emma-game/",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
