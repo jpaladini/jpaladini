@@ -21,6 +21,7 @@ const navLinks = [
   { href: '/', label: 'Home', key: 'home' },
   { href: '/projects', label: 'Projects', key: 'projects' },
   { href: '/blog', label: 'Blog', key: 'blog' },
+  { href: '/jason-paladini-resume.pdf', label: 'Resume', key: 'resume', external: true },
 ];
 ---
 
@@ -77,6 +78,8 @@ const navLinks = [
                   : 'text-text-3 hover:text-text hover:bg-white/[0.06]',
               ]}
               aria-current={active === link.key ? 'page' : undefined}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener' : undefined}
             >
               {link.label}
             </a>
