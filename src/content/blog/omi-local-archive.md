@@ -97,7 +97,7 @@ A systemd timer now invokes the incremental pull every three hours. The timer is
 
 The biggest problem was not ingestion. It was attribution.
 
-Omi assigns speaker IDs, but those IDs are not stable enough to treat as people. A later query against the complete snapshot found a median of 9 distinct speaker IDs per conversation and a maximum of 319. Eleven conversations had empty transcripts. Omi’s action-item collection was empty across the dataset.
+Omi assigns speaker IDs, but those IDs are not stable enough to treat as people. A later query against the complete snapshot found a median of 9 distinct speaker IDs per conversation and a maximum of 319. Sixteen conversations had empty transcripts. Omi’s action-item collection was empty across the dataset.
 
 Those numbers changed the design.
 
@@ -109,13 +109,13 @@ The lesson is broader than Omi: transcription confidence and identity confidence
 
 ## Step 3: Chunk transcripts for retrieval
 
-Searching full conversations directly is too coarse. Many recordings contain multiple unrelated topics, and most are short—the median is roughly four minutes—but longer conversations can drift substantially.
+Searching full conversations directly is too coarse. Many recordings contain multiple unrelated topics, and most are short—the median is just over two minutes—but longer conversations can drift substantially.
 
 I split transcripts into passages of about 180 words, with a new chunk forced when there is a gap of roughly 45 seconds. This gives the retrieval system units that are large enough to preserve context but small enough to rank meaningfully.
 
 Each passage keeps a reference to its conversation and source offsets. Search results can therefore lead back to the exact conversation rather than becoming detached summaries.
 
-The initial embedding pass processed 451 passages in about 32 seconds using `nomic-embed-text` through a local Ollama instance on CPU. Each passage is keyed by an MD5 digest of its normalized content. On later runs, unchanged digests reuse their stored vectors and only new or changed passages are embedded. As the archive grew, the passage count reached 578 without requiring a full re-embedding pass.
+The initial embedding pass processed 451 passages in about 32 seconds using `nomic-embed-text` through a local Ollama instance on CPU. Each passage's embedding is keyed by an MD5 digest of its text plus the model name. On later runs, unchanged digests reuse their stored vectors and only new or changed passages are embedded. As the archive grew, the passage count reached 578 without requiring a full re-embedding pass.
 
 Keeping embedding local was important: these transcripts can include family members and bystanders, so reducing unnecessary data movement is part of the architecture, not an afterthought.
 
@@ -167,11 +167,11 @@ The archive is most useful when it turns a day of ambient conversation into some
 2. Groups transcript material into chunks of roughly 80 KB.
 3. Uses a model to summarize each chunk.
 4. Combines those summaries into a structured daily review.
-5. Runs a second model pass over every proposed to-do.
-6. Checks the task against the transcript lines from which it supposedly came.
+5. Runs a second model pass over every proposed to-do, upcoming item, decision, and idea.
+6. Checks each item against the transcript lines from which it supposedly came.
 7. Produces an HTML email for delivery at 6:45 each morning.
 
-The verification pass is not decorative. On the first checked run it made 16 corrections. That validated the idea but also exposed its limits: the checker currently verifies to-dos, not every claim in the narrative sections. A checked run also costs roughly 100,000 model tokens, so there is an obvious optimization problem ahead.
+The verification pass is not decorative. On the first checked run it made 16 corrections. That validated the idea but also exposed its limits: the checker verifies the itemized sections, not the narrative "day in brief" and topic summaries. A checked run also costs roughly 100,000 model tokens, so there is an obvious optimization problem ahead.
 
 The scheduled morning run has not fired yet. The pipeline works when invoked manually, but I will not call an automation “working” until the timer has executed it successfully and the result has been delivered. Configuration is not proof.
 
@@ -225,7 +225,7 @@ That is what “buy the gadget, keep the data” means in practice: use the hard
 
 ## Next experiment: custom firmware and phone-free PCM streaming
 
-The next layer I want to explore is the pendant firmware itself. Today, Omi sends PCM audio to its phone app, which makes the phone the required bridge between the microphone and everything downstream. I would like to experiment with custom firmware that lets me choose the destination instead.
+The next layer I want to explore is the pendant firmware itself. Today, the pendant streams audio over Bluetooth to the Omi phone app, which makes the phone the required bridge between the microphone and everything downstream. I would like to experiment with custom firmware that lets me choose the destination instead.
 
 For example, the pendant could stream PCM directly to a laptop, a nearby single-board computer, or a dedicated home gateway. That device could handle buffering, voice-activity detection, wake-word processing, local transcription, encryption, or forwarding into the archive—without requiring the Omi app to remain in the middle. A portable receiver could provide the same path away from home, while the phone could remain one optional target rather than the only one.
 
@@ -233,4 +233,4 @@ There are real constraints to test: Bluetooth bandwidth and stability, battery l
 
 ---
 
-*Draft based on the first two days of the project. Counts reflect the archive snapshot at 9:30 PM ET on November 21, 2026. Privacy-sensitive transcript content, network names, credentials, and third-party conversations have been intentionally excluded.*
+*Draft based on the first two days of the project. Counts reflect the archive snapshot at 10:40 PM ET on November 21, 2026. Privacy-sensitive transcript content, network names, credentials, and third-party conversations have been intentionally excluded.*
