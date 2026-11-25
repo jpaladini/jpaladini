@@ -6,7 +6,7 @@ category: "Deep dive"
 readingTime: "12 min"
 tags: [system-design, distributed-systems, databases, ddia, book-notes]
 author: "Jason Paladini"
-draft: false
+draft: true
 ---
 
 > These notes were written with [Jon Avezbaki](https://avenuej.dev/educational-resources/system-design/), whose original study guide lives on avenuej.dev. Everything below is our distillation of *[Designing Data-Intensive Applications](https://dataintensive.net/)* (Martin Kleppmann, 1st ed.) — the ideas are his; go read the book. This is the refresher we wish we'd had before system design interviews and architecture reviews.
