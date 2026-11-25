@@ -172,9 +172,9 @@ flowchart LR
   P[Proposal cards<br/>Apply / Dismiss] --> ADO
   C --> P
 
-  classDef live fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef plan fill:#EFEAFE,stroke:#7A5AF8,color:#15191E,stroke-dasharray:4 3;
-  classDef gate fill:#E4F3EA,stroke:#138A4E,color:#15191E;
+  classDef live fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef plan fill:#1a1a1a,stroke:#9b9b9b,color:#ececec,stroke-dasharray:4 3;
+  classDef gate fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
   class ADO live;
   class LAKE,JOB plan;
   class P gate;
@@ -182,7 +182,7 @@ flowchart LR
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right diagram. On the left, a rounded "User" node points into a box labeled "AI Copilot — agent loop." From that box, a bold solid blue arrow labeled "live · read + propose" goes to a blue cylinder "Azure DevOps REST API." A dashed purple arrow labeled "batch · Genie tool" goes to a purple cylinder "Delta tables + Genie Space," which is fed from below by a box "Scheduled ingest: OData → Delta" with a dashed arrow labeled "daily." Between the agent and the live cylinder, insert a green box "Proposal cards — Apply / Dismiss": the agent points into it, and it points into the Azure DevOps cylinder — showing that the write path detours through a human gate while reads go direct. Blue = live plane, purple = batch plane, green = the human gate. The message: one agent, two data planes, and writes always pass through the green box.</p>
+  <p>A left-to-right diagram. On the left, a rounded "User" node points into a box labeled "AI Copilot — agent loop." From that box, a bold solid arrow labeled "live · read + propose" goes to a dark-grey cylinder "Azure DevOps REST API." A dashed arrow labeled "batch · Genie tool" goes to an outlined cylinder "Delta tables + Genie Space," which is fed from below by an outlined box "Scheduled ingest: OData → Delta" with a dashed arrow labeled "daily." Between the agent and the live cylinder, insert a light-grey box "Proposal cards — Apply / Dismiss": the agent points into it, and it points into the Azure DevOps cylinder — showing that the write path detours through a human gate while reads go direct. Dark grey = live plane, outlined = batch plane, light grey = the human gate. The message: one agent, two data planes, and writes always pass through the light-grey box.</p>
 </details>
 
 The nice second-order effect: the Analytics tab got *simpler*. Its chat moved into the copilot, and the tab is now free to become what it should have been all along — filtered report widgets over the OData aggregates (that's Phase 4C).

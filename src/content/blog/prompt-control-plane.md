@@ -44,9 +44,9 @@ flowchart LR
   APP --> LOG[(Run log:<br/>exact version + model)]
   S -. rollback = same UPDATE,<br/>previous version .-> V
 
-  classDef edit fill:#EFEAFE,stroke:#7A5AF8,color:#15191E;
-  classDef gate fill:#FFF6E5,stroke:#B7791F,color:#15191E;
-  classDef live fill:#E4F3EA,stroke:#138A4E,color:#15191E;
+  classDef edit fill:#1a1a1a,stroke:#9b9b9b,color:#ececec;
+  classDef gate fill:#5a5a5a,stroke:#ececec,color:#ffffff;
+  classDef live fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
   class SME,V edit;
   class P gate;
   class S,APP,LOG live;
@@ -54,7 +54,7 @@ flowchart LR
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right lifecycle diagram. A "Domain expert edits prompt" box flows into a "New prompt version — v8, staging row" box. An arrow labeled "review + eval" leads to a "Promote?" decision diamond. The "yes" branch goes to "UPDATE stage = 'prod' — one column", then to "App resolves workflow + stage at runtime", ending at a cylinder "Run log: exact version + model". The "no" branch loops back to the staging version, and a dashed arrow from the promote step back to the version box notes that rollback is the same UPDATE pointing at the previous version. Purple = editing, amber = the promotion gate, green = the live path.</p>
+  <p>A left-to-right lifecycle diagram. A "Domain expert edits prompt" box flows into a "New prompt version — v8, staging row" box. An arrow labeled "review + eval" leads to a "Promote?" decision diamond. The "yes" branch goes to "UPDATE stage = 'prod' — one column", then to "App resolves workflow + stage at runtime", ending at a cylinder "Run log: exact version + model". The "no" branch loops back to the staging version, and a dashed arrow from the promote step back to the version box notes that rollback is the same UPDATE pointing at the previous version. Outlined = editing, mid grey = the promotion gate, light grey = the live path.</p>
 </details>
 
 A workflow is a row. It points at a versioned prompt, a model, and an environment. Promotion to production is an update to a single column — and because it's a table, the whole thing is queryable, diff-able, and protected by the same access controls as the rest of the lakehouse.

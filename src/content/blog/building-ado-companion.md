@@ -87,15 +87,15 @@ flowchart LR
   BFF -. "SQL · Genie · planned" .-> LAKE[(Delta tables<br/>Unity Catalog + Genie Space)]
   JOB[Scheduled Job<br/>ADO OData -> Delta] -. nightly .-> LAKE
 
-  classDef live fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef plan fill:#EFEAFE,stroke:#7A5AF8,color:#15191E,stroke-dasharray:4 3;
+  classDef live fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef plan fill:#1a1a1a,stroke:#9b9b9b,color:#ececec,stroke-dasharray:4 3;
   class ADO live;
   class LAKE,JOB plan;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right architecture diagram. On the far left, a rounded "User in browser" node with an arrow pointing right into a large container box labeled "Databricks App: ado-companion." Inside that container, stacked vertically, are two boxes: "React SPA (Vite · TypeScript · Tailwind)" on top and "FastAPI BFF (Databricks SDK · httpx)" below it, connected by a short downward arrow labeled "/api/\*". From the FastAPI box, a bold solid arrow points right to a cylinder (database) labeled "Azure DevOps REST API," and that arrow is labeled "REST · live · read+write" (color it blue to mean the operational plane). Also from the FastAPI box, a dashed arrow points to a second cylinder labeled "Delta tables — Unity Catalog + Genie Space," labeled "SQL · Genie · planned" (color it purple, dashed, to mean future/analytical). A separate box on the bottom labeled "Scheduled Job: ADO OData → Delta" has a dashed arrow labeled "nightly" feeding the same Delta cylinder. Visual intent: solid blue = live operational path that exists today; dashed purple = analytical path that is planned.</p>
+  <p>A left-to-right architecture diagram. On the far left, a rounded "User in browser" node with an arrow pointing right into a large container box labeled "Databricks App: ado-companion." Inside that container, stacked vertically, are two boxes: "React SPA (Vite · TypeScript · Tailwind)" on top and "FastAPI BFF (Databricks SDK · httpx)" below it, connected by a short downward arrow labeled "/api/\*". From the FastAPI box, a bold solid arrow points right to a cylinder (database) labeled "Azure DevOps REST API," and that arrow is labeled "REST · live · read+write" (the cylinder is filled dark grey to mean the operational plane). Also from the FastAPI box, a dashed arrow points to a second cylinder labeled "Delta tables — Unity Catalog + Genie Space," labeled "SQL · Genie · planned" (outlined and dashed, to mean future/analytical). A separate box on the bottom labeled "Scheduled Job: ADO OData → Delta" has a dashed arrow labeled "nightly" feeding the same Delta cylinder. Visual intent: solid dark grey = live operational path that exists today; dashed outline = analytical path that is planned.</p>
 </details>
 
 <!-- 📸 Screenshot slot: Optional — a Databricks workspace view showing the `ado-companion` app resource, to ground "it really runs here." -->
@@ -199,13 +199,13 @@ flowchart LR
   stg --> wsstg[(stg workspace<br/>secrets: ado scope)]
   prod --> wsprod[(prod workspace<br/>secrets: ado scope)]
 
-  classDef env fill:#E4F3EA,stroke:#138A4E,color:#15191E;
+  classDef env fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
   class wsdev,wsstg,wsprod env;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right promotion diagram. A box labeled "feature branch" flows right into a box "dev," which flows via an arrow labeled "PR" into "stg," which flows via another "PR" arrow into "prod." These three (dev, stg, prod) sit in a horizontal row, like a pipeline. Below each of the three branch boxes, a downward arrow points to a green cylinder (database/workspace) labeled respectively "dev workspace," "stg workspace," and "prod workspace," each annotated "secrets: ado scope." The message: the same code marches left-to-right through protected branches; each branch deploys to its own workspace, and the only thing that differs between environments is the per-workspace secret values. Use a calm green for the workspace cylinders.</p>
+  <p>A left-to-right promotion diagram. A box labeled "feature branch" flows right into a box "dev," which flows via an arrow labeled "PR" into "stg," which flows via another "PR" arrow into "prod." These three (dev, stg, prod) sit in a horizontal row, like a pipeline. Below each of the three branch boxes, a downward arrow points to a light-grey cylinder (database/workspace) labeled respectively "dev workspace," "stg workspace," and "prod workspace," each annotated "secrets: ado scope." The message: the same code marches left-to-right through protected branches; each branch deploys to its own workspace, and the only thing that differs between environments is the per-workspace secret values. The workspace cylinders are light grey.</p>
 </details>
 
 ---
@@ -238,15 +238,15 @@ flowchart TB
   G --> H[bundle run ado_app]
   H --> I([App URL printed])
 
-  classDef ok fill:#E4F3EA,stroke:#138A4E,color:#15191E;
-  classDef bad fill:#FBE7E3,stroke:#D23B23,color:#15191E;
+  classDef ok fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
+  classDef bad fill:#1a1a1a,stroke:#ececec,color:#ececec,stroke-width:3px;
   class I ok;
   class X bad;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A top-to-bottom flowchart of a CI/CD pipeline. Start with a rounded terminator node "Merge to dev." Arrow down into a diamond decision node: "Guard: is the branch dev/stg/prod?" From the diamond, a branch labeled "no" goes to a red box "Fail fast" (a dead end). The "yes" branch continues downward through a vertical sequence of rectangular steps: "Use Node 20" → "npm ci + npm run build → src/static" → "Install Databricks CLI" → "bundle validate -t dev" → "bundle deploy -t dev" → "bundle run ado_app." The final arrow lands on a green rounded terminator "App URL printed." Color the success terminator green and the fail-fast box red; keep the middle steps neutral/grey. The intent: a guarded, linear deploy that either dead-ends early on a wrong branch or marches straight to a running app.</p>
+  <p>A top-to-bottom flowchart of a CI/CD pipeline. Start with a rounded terminator node "Merge to dev." Arrow down into a diamond decision node: "Guard: is the branch dev/stg/prod?" From the diamond, a branch labeled "no" goes to a heavy-outlined box "Fail fast" (a dead end). The "yes" branch continues downward through a vertical sequence of rectangular steps: "Use Node 20" → "npm ci + npm run build → src/static" → "Install Databricks CLI" → "bundle validate -t dev" → "bundle deploy -t dev" → "bundle run ado_app." The final arrow lands on a light-grey rounded terminator "App URL printed." The success terminator is light grey and the fail-fast box is hollow with a heavy outline; the middle steps stay plain. The intent: a guarded, linear deploy that either dead-ends early on a wrong branch or marches straight to a running app.</p>
 </details>
 
 <!-- 📸 Screenshot slot: The Azure Pipelines run view — a green successful run with the stage/step list expanded. -->
@@ -273,9 +273,9 @@ flowchart LR
   DEV -->|trigger| PIPE[Azure Pipeline]
   PIPE -->|bundle deploy + run| APP[Databricks App<br/>running]
 
-  classDef gh fill:#EEF1F4,stroke:#5B6770,color:#15191E;
-  classDef ado fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef dbx fill:#FFF1EF,stroke:#FF3621,color:#15191E;
+  classDef gh fill:#262626,stroke:#5a5a5a,color:#ececec;
+  classDef ado fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef dbx fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
   class CC,GH gh;
   class ADOR,DEV,PIPE ado;
   class APP dbx;
@@ -283,7 +283,7 @@ flowchart LR
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right pipeline diagram showing how code travels from an AI agent to a running app, crossing three "worlds" (GitHub, Azure DevOps, Databricks). Far left: a box "Claude Code session" with an arrow labeled "git push" to a box "GitHub repo (feature branch)." From there, an arrow labeled "GitHub Action: mirror-to-ado" points to "Azure DevOps Repos (same branch)." From there, an arrow labeled "Pull Request" points to "dev branch (protected)." From dev, an arrow labeled "trigger" points to "Azure Pipeline." Finally an arrow labeled "bundle deploy + run" points to "Databricks App (running)." Color-group the nodes: the two leftmost (Claude Code, GitHub) in neutral grey = "GitHub world"; the middle three (ADO Repos, dev branch, Azure Pipeline) in blue = "Azure DevOps world"; the final node (Databricks App) in Databricks-lava red/orange = "Databricks world." The message: an AI agent pushes to GitHub, a mirror lands it in ADO automatically, a PR into a protected branch fires the pipeline, and the pipeline deploys to Databricks — a clean assembly line across three platforms.</p>
+  <p>A left-to-right pipeline diagram showing how code travels from an AI agent to a running app, crossing three "worlds" (GitHub, Azure DevOps, Databricks). Far left: a box "Claude Code session" with an arrow labeled "git push" to a box "GitHub repo (feature branch)." From there, an arrow labeled "GitHub Action: mirror-to-ado" points to "Azure DevOps Repos (same branch)." From there, an arrow labeled "Pull Request" points to "dev branch (protected)." From dev, an arrow labeled "trigger" points to "Azure Pipeline." Finally an arrow labeled "bundle deploy + run" points to "Databricks App (running)." The nodes are grouped by shade: the two leftmost (Claude Code, GitHub) plain = "GitHub world"; the middle three (ADO Repos, dev branch, Azure Pipeline) in dark grey = "Azure DevOps world"; the final node (Databricks App) in light grey = "Databricks world." The message: an AI agent pushes to GitHub, a mirror lands it in ADO automatically, a PR into a protected branch fires the pipeline, and the pipeline deploys to Databricks — a clean assembly line across three platforms.</p>
 </details>
 
 <!-- 📸 Screenshot slot: The GitHub Actions tab showing a green "Mirror to Azure DevOps" run; and/or the Azure DevOps Repos → Branches view showing the mirrored branch. -->

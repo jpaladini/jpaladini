@@ -49,15 +49,15 @@ flowchart LR
   AI --> F
   F --> ANS[Answer with citations<br/>every claim → transcript span]
 
-  classDef idx fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef out fill:#E4F3EA,stroke:#138A4E,color:#15191E;
+  classDef idx fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef out fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
   class TI,AI idx;
   class ANS out;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right retrieval diagram. An "Analyst question" node flows into a "RAG agent" box. From the agent, two bold arrows fan out to two blue cylinders: a "Transcript index — ground truth" (labeled "what was said") and an "Analysis index — prior reasoning" (labeled "what we concluded"). Both cylinders feed a "Fuse at query time" box, which flows into a green "Answer with citations" node annotated "every claim → transcript span". The message: one question, two retrieval planes, one cited answer.</p>
+  <p>A left-to-right retrieval diagram. An "Analyst question" node flows into a "RAG agent" box. From the agent, two bold arrows fan out to two dark-grey cylinders: a "Transcript index — ground truth" (labeled "what was said") and an "Analysis index — prior reasoning" (labeled "what we concluded"). Both cylinders feed a "Fuse at query time" box, which flows into a light-grey "Answer with citations" node annotated "every claim → transcript span". The message: one question, two retrieval planes, one cited answer.</p>
 </details>
 
 > A citation isn't decoration. It's the contract: every claim the agent makes points back to a specific transcript span it can be checked against.
