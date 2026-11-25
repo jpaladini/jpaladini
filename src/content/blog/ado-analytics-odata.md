@@ -71,13 +71,13 @@ flowchart LR
   B --> C[Group + count<br/>in app code]
   C --> N[(One number)]
   C -. trend? .-> D[Repeat per day<br/>AsOf x 30]
-  classDef bad fill:#FBE7E3,stroke:#D23B23,color:#15191E;
+  classDef bad fill:#1a1a1a,stroke:#ececec,color:#ececec,stroke-width:3px;
   class D bad;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right flow showing a wasteful path. Start with a rounded node "Count items by state." Arrow right to a box "WIQL: returns IDs (max ~20k)." Arrow to "Batch-get fields, 200 at a time." Arrow to "Group + count in app code." Arrow to a small cylinder "One number." Then, from the "Group + count" box, a dashed branch labeled "trend?" drops down to a red box "Repeat per day — AsOf × 30." The visual story: a long chain of heavy steps to produce a single number, and an even worse dashed detour (in red) when you ask for a trend. Color the main chain neutral grey and the trend detour red to signal "anti-pattern."</p>
+  <p>A left-to-right flow showing a wasteful path. Start with a rounded node "Count items by state." Arrow right to a box "WIQL: returns IDs (max ~20k)." Arrow to "Batch-get fields, 200 at a time." Arrow to "Group + count in app code." Arrow to a small cylinder "One number." Then, from the "Group + count" box, a dashed branch labeled "trend?" drops down to a heavy-outlined box "Repeat per day — AsOf × 30." The visual story: a long chain of heavy steps to produce a single number, and an even worse dashed detour (the heavy-outlined box) when you ask for a trend. The main chain is plain dark grey; the trend detour is hollow with a heavy outline to signal "anti-pattern."</p>
 </details>
 
 ---
@@ -137,15 +137,15 @@ flowchart TD
   ODATA --> PICK[(Analytics v1 — ship now)]
   DELTA -. Phase 3 .-> PICK2[(Genie tab — later)]
   ODATA -. same feed .-> DELTA
-  classDef now fill:#E4F3EA,stroke:#138A4E,color:#15191E;
-  classDef later fill:#EFEAFE,stroke:#7A5AF8,color:#15191E,stroke-dasharray:4 3;
+  classDef now fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
+  classDef later fill:#1a1a1a,stroke:#9b9b9b,color:#ececec,stroke-dasharray:4 3;
   class PICK now;
   class PICK2,DELTA later;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A top-down decision diagram. Start with a rounded node "Dashboard needs aggregates + trends." Arrow down to a diamond decision "What's the need?" Three labeled branches fan out: (1) "live list of items" → box "WIQL + batch get (operational tab)." (2) "counts + trends now" → box "Analytics OData ($apply / snapshots)." (3) "NL Q&A · offload ADO" → box "Ingest OData to Delta + Genie Space." From the OData box, a solid arrow points to a green rounded node "Analytics v1 — ship now." From the Delta/Genie box, a dashed arrow labeled "Phase 3" points to a purple, dashed node "Genie tab — later." Finally, a dashed arrow labeled "same feed" connects the OData box to the Delta/Genie box, emphasizing that the lakehouse path consumes the very same OData source. Color intent: green = build now, purple/dashed = planned. The message: pick OData for v1, and the Genie path later reuses the same feed — these are stages, not competing choices.</p>
+  <p>A top-down decision diagram. Start with a rounded node "Dashboard needs aggregates + trends." Arrow down to a diamond decision "What's the need?" Three labeled branches fan out: (1) "live list of items" → box "WIQL + batch get (operational tab)." (2) "counts + trends now" → box "Analytics OData ($apply / snapshots)." (3) "NL Q&A · offload ADO" → box "Ingest OData to Delta + Genie Space." From the OData box, a solid arrow points to a light-grey rounded node "Analytics v1 — ship now." From the Delta/Genie box, a dashed arrow labeled "Phase 3" points to an outlined, dashed node "Genie tab — later." Finally, a dashed arrow labeled "same feed" connects the OData box to the Delta/Genie box, emphasizing that the lakehouse path consumes the very same OData source. Shading intent: light grey = build now, outlined and dashed = planned. The message: pick OData for v1, and the Genie path later reuses the same feed — these are stages, not competing choices.</p>
 </details>
 
 ---
@@ -176,17 +176,17 @@ flowchart LR
   BFF == "$apply aggregates<br/>+ snapshot trends" ==> ODATA[(ADO Analytics OData<br/>analytics.dev.azure.com)]
   ODATA ==> BFF
   BFF -. Phase 3 .-> JOB[Scheduled Job<br/>OData -> Delta]
-  JOB -. .-> GENIE[(Delta + Genie Space)]
+  JOB -.-> GENIE[(Delta + Genie Space)]
   DASH -. future NL Q&A .-> GENIE
-  classDef live fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef plan fill:#EFEAFE,stroke:#7A5AF8,color:#15191E,stroke-dasharray:4 3;
+  classDef live fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef plan fill:#1a1a1a,stroke:#9b9b9b,color:#ececec,stroke-dasharray:4 3;
   class ODATA live;
   class JOB,GENIE plan;
 ```
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right data-flow diagram. On the left, a box "Overview dashboard (React + TanStack Query)" with an arrow labeled "/api/.../analytics?range=" pointing right to a box "FastAPI BFF (Analytics client)." Between the BFF and a blue cylinder labeled "ADO Analytics OData — analytics.dev.azure.com," draw a bold double-headed/round-trip arrow labeled "$apply aggregates + snapshot trends" (request out, aggregated numbers back). Color that cylinder blue = the live path that exists now. Then, from the BFF, a dashed arrow labeled "Phase 3" points down/right to a box "Scheduled Job: OData → Delta," which has a dashed arrow to a purple cylinder "Delta + Genie Space." Finally a dashed arrow labeled "future NL Q&A" goes from the dashboard directly to the Genie cylinder. Visual intent: solid blue = today's live OData aggregation path; dashed purple = the planned lakehouse/Genie extension fed by the same OData source.</p>
+  <p>A left-to-right data-flow diagram. On the left, a box "Overview dashboard (React + TanStack Query)" with an arrow labeled "/api/.../analytics?range=" pointing right to a box "FastAPI BFF (Analytics client)." Between the BFF and a dark-grey cylinder labeled "ADO Analytics OData — analytics.dev.azure.com," draw a bold double-headed/round-trip arrow labeled "$apply aggregates + snapshot trends" (request out, aggregated numbers back). That filled cylinder = the live path that exists now. Then, from the BFF, a dashed arrow labeled "Phase 3" points down/right to an outlined box "Scheduled Job: OData → Delta," which has a dashed arrow to an outlined cylinder "Delta + Genie Space." Finally a dashed arrow labeled "future NL Q&A" goes from the dashboard directly to the Genie cylinder. Visual intent: solid dark grey = today's live OData aggregation path; dashed outline = the planned lakehouse/Genie extension fed by the same OData source.</p>
 </details>
 
 ![The same dashboard with the time range set to 30d — the Open KPI caption now reads "3 total · 30d" and the sparkline shows the longer trend window](/images/blog/ado-companion/analytics-overview-30d.png)

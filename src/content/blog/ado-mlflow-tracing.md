@@ -61,10 +61,10 @@ flowchart TB
   T --> L3["llm (call 3)"]
   T --> O["outputs: reply, tools used,<br/>proposals made"]
 
-  classDef turn fill:#E7EEFC,stroke:#2D6CDF,color:#15191E;
-  classDef llm fill:#EFEAFE,stroke:#7A5AF8,color:#15191E;
-  classDef tool fill:#E4F3EA,stroke:#138A4E,color:#15191E;
-  classDef verify fill:#FFF6E5,stroke:#B7791F,color:#15191E;
+  classDef turn fill:#3a3a3a,stroke:#9b9b9b,color:#ececec;
+  classDef llm fill:#1a1a1a,stroke:#9b9b9b,color:#ececec;
+  classDef tool fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
+  classDef verify fill:#5a5a5a,stroke:#ececec,color:#ffffff;
   class T,O turn;
   class L1,L2,L3 llm;
   class TO1 tool;
@@ -73,7 +73,7 @@ flowchart TB
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A top-to-bottom tree diagram. The root node, in blue, is "copilot.turn" annotated with its inputs (the user message and history size) and attributes (endpoint name, project). From the root, five children hang in chronological order, left to right or stacked: a purple node "llm (call 1)" annotated "finish_reason, token usage"; a green node "tool:list_work_items" annotated "args in, truncated result out"; a purple node "llm (call 2)"; an amber node "verify:update_work_item" annotated "target id in, rejected? out"; a purple node "llm (call 3)." At the bottom, a blue summary node "outputs: reply, tools used, proposals made." Color code: blue = the turn envelope, purple = model calls, green = tool executions, amber = write-target verification. The message: one trace tells the complete story of one question.</p>
+  <p>A top-to-bottom tree diagram. The root node, in dark grey, is "copilot.turn" annotated with its inputs (the user message and history size) and attributes (endpoint name, project). From the root, five children hang in chronological order, left to right or stacked: an outlined node "llm (call 1)" annotated "finish_reason, token usage"; a light-grey node "tool:list_work_items" annotated "args in, truncated result out"; an outlined node "llm (call 2)"; a mid-grey node "verify:update_work_item" annotated "target id in, rejected? out"; an outlined node "llm (call 3)." At the bottom, a dark-grey summary node "outputs: reply, tools used, proposals made." Shading code: dark grey = the turn envelope, outlined = model calls, light grey = tool executions, mid grey = write-target verification. The message: one trace tells the complete story of one question.</p>
 </details>
 
 Three deliberate choices in what gets recorded:
@@ -117,7 +117,7 @@ Operationally, activation is two human steps in the workspace, both documented i
 
 Both of these happened in the first day of real usage. Neither required reproducing the issue, adding logging, or redeploying.
 
-**The guessed ID.** A user asked the copilot to update *two* work items; the second proposal failed on Apply with a 404 from Azure DevOps. The trace showed the why immediately: the turn had **no `list_work_items` span** before the proposal. The model had assumed work item IDs are sequential and invented `#3` — which happened to be a deleted item sitting in the recycle bin. The fix became a design upgrade rather than a patch: the server now **verifies every update target exists before the proposal surfaces**, and a rejection is fed back to the model mid-loop so it corrects itself. Those checks are the amber `verify:*` spans — the incident is now a permanent, visible part of the loop's anatomy.
+**The guessed ID.** A user asked the copilot to update *two* work items; the second proposal failed on Apply with a 404 from Azure DevOps. The trace showed the why immediately: the turn had **no `list_work_items` span** before the proposal. The model had assumed work item IDs are sequential and invented `#3` — which happened to be a deleted item sitting in the recycle bin. The fix became a design upgrade rather than a patch: the server now **verifies every update target exists before the proposal surfaces**, and a rejection is fed back to the model mid-loop so it corrects itself. Those checks are the `verify:*` spans — the incident is now a permanent, visible part of the loop's anatomy.
 
 **The disappearing second proposal.** Same request class — "do this to two items" — but only one proposal card appeared, and the reply text contained a strange artifact. The trace showed the model's final message verbatim: the second tool call had been emitted **as plain text** (`update_work_item(id=2, ...)`) rather than as a structured tool call — a llama-family template quirk on multi-call turns. Prompt engineering alone didn't cure it; a small fallback parser now lifts text-form calls into real ones, so no proposal is ever silently dropped.
 
@@ -139,9 +139,9 @@ flowchart LR
   E --> R[Model re-reads:<br/>list_work_items]
   R --> M2[Model re-proposes<br/>with real IDs] --> V
 
-  classDef ok fill:#E4F3EA,stroke:#138A4E,color:#15191E;
-  classDef check fill:#FFF6E5,stroke:#B7791F,color:#15191E;
-  classDef err fill:#FBE7E3,stroke:#D23B23,color:#15191E;
+  classDef ok fill:#9b9b9b,stroke:#ececec,color:#1a1a1a;
+  classDef check fill:#5a5a5a,stroke:#ececec,color:#ffffff;
+  classDef err fill:#1a1a1a,stroke:#ececec,color:#ececec,stroke-width:3px;
   class P ok;
   class V check;
   class E err;
@@ -149,7 +149,7 @@ flowchart LR
 
 <details class="diagram-note">
   <summary>Diagram description (text version)</summary>
-  <p>A left-to-right cycle diagram. A box "Model proposes update_work_item" flows into an amber diamond "verify: target exists?". The "yes" branch exits right to a green box "Proposal card to the user." The "no (404)" branch drops to a red box "Error fed back to the model," which flows into "Model re-reads: list_work_items," which flows into "Model re-proposes with real IDs," which loops back into the amber diamond. The message: bad proposals never reach the human; they bounce back to the model, which self-corrects within the same turn. Green = what the user sees, amber = the server's check, red = the internal correction path the user never sees.</p>
+  <p>A left-to-right cycle diagram. A box "Model proposes update_work_item" flows into a mid-grey diamond "verify: target exists?". The "yes" branch exits right to a light-grey box "Proposal card to the user." The "no (404)" branch drops to a heavy-outlined box "Error fed back to the model," which flows into "Model re-reads: list_work_items," which flows into "Model re-proposes with real IDs," which loops back into the mid-grey diamond. The message: bad proposals never reach the human; they bounce back to the model, which self-corrects within the same turn. Light grey = what the user sees, mid grey = the server's check, heavy outline = the internal correction path the user never sees.</p>
 </details>
 
 The user experiences none of this machinery — they just see correct proposals. The traces are where the machinery stays visible, which is exactly where you want it.
