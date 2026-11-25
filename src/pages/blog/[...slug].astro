@@ -14,7 +14,10 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' });
+
+// Subject line: the title up to its first colon or dash clause.
+const subject = post.data.title.split(/:\s|\s[—–]\s/)[0];
 
 const all = await getPosts();
 
@@ -25,12 +28,16 @@ const seriesPosts = post.data.series
       .sort((a, b) => (a.data.part ?? 0) - (b.data.part ?? 0))
   : [];
 const seriesIndex = seriesPosts.findIndex((p) => p.id === post.id);
-const prevPart = seriesIndex > 0 ? seriesPosts[seriesIndex - 1] : null;
 const nextPart = seriesIndex >= 0 && seriesIndex < seriesPosts.length - 1 ? seriesPosts[seriesIndex + 1] : null;
 
 // Pick a related post: next in series, else the most recent other post.
 const others = all.filter((p) => p.id !== post.id && p.data.series !== post.data.series);
 const related = nextPart ?? others[0] ?? null;
+
+const eyebrow = 'm-0 mb-2 text-[12px] uppercase tracking-eyebrow text-text-muted';
+const rowTitle = 'decoration-text underline-offset-[3px] group-hover:underline';
+const partRow = 'grid grid-cols-[36px_minmax(0,1fr)] gap-3 py-3';
+const partTitle = 'font-serif text-[19px] leading-[1.35] text-text-bright';
 ---
 
 <MainLayout
@@ -38,73 +45,83 @@ const related = nextPart ?? others[0] ?? null;
   description={post.data.description}
   active="blog"
 >
-  <!-- Article header -->
-  <header class="border-b border-white/[0.07]">
-    <div class="max-w-article mx-auto px-8 pt-[60px] pb-11">
-      <a href="/blog" class="font-mono text-xs text-accent no-underline hover:text-accent-bright transition-colors">← All posts</a>
-      <div class="mt-[26px] font-mono text-[11px] text-accent uppercase tracking-[0.16em]">
-        {post.data.series ? `${post.data.series} · Part ${post.data.part}` : post.data.category}
-        {post.data.draft && (
-          <span class="ml-3 normal-case tracking-normal text-[10px] text-amber-300 border border-amber-300/40 rounded px-1.5 py-0.5">draft — hidden in production</span>
-        )}
-      </div>
-      <h1 class="mt-4 mb-0 font-bold text-[clamp(32px,5vw,46px)] leading-[1.06] tracking-[-0.025em]">{post.data.title}</h1>
-      <div class="flex items-center gap-3.5 mt-6 font-mono text-xs text-text-faint">
-        <span>{post.data.author}</span><span>·</span>
-        <time datetime={post.data.date.toISOString()}>{monthFmt.format(post.data.date)}</time>
-        <span>·</span><span>{post.data.readingTime} read</span>
-      </div>
-    </div>
-  </header>
+  <article>
+    <dl class="grid grid-cols-[88px_minmax(0,1fr)] gap-x-4 gap-y-0.5 m-0 mb-7 text-[13px]">
+      <dt class="text-text-muted">Date:</dt>
+      <dd class="m-0"><time datetime={post.data.date.toISOString()}>{dateFmt.format(post.data.date)}</time></dd>
+      <dt class="text-text-muted">From:</dt>
+      <dd class="m-0">{post.data.author} &lt;<a href="mailto:jason@jpaladini.com">jason@jpaladini.com</a>&gt;</dd>
+      <dt class="text-text-muted">Filed:</dt>
+      <dd class="m-0">{post.data.category} · {post.data.readingTime}</dd>
+      {post.data.series && (
+        <>
+          <dt class="text-text-muted">Series:</dt>
+          <dd class="m-0">{post.data.series} · Part {post.data.part}</dd>
+        </>
+      )}
+      {post.data.draft && (
+        <>
+          <dt class="text-text-muted">Status:</dt>
+          <dd class="m-0">Draft — hidden in production</dd>
+        </>
+      )}
+      <dt class="text-text-muted">Subject:</dt>
+      <dd class="m-0 font-medium">{subject}</dd>
+    </dl>
+    <hr class="m-0 mb-12 border-0 border-t border-dashed border-rule-dashed" />
 
-  <!-- Article body -->
-  <article class="max-w-article mx-auto px-8 pt-12 pb-6">
+    <h1 class="m-0 mb-6 font-serif font-normal text-[clamp(30px,7.4vw,42px)] leading-[1.15] tracking-[-0.01em] text-text-bright">{post.data.title}</h1>
+
     <div class="post-body">
+      <p class="italic text-text-soft">{post.data.description}</p>
       <Content />
     </div>
 
     {post.data.tags.length > 0 && (
-      <div class="mt-10 pt-7 border-t border-white/[0.09] flex gap-3 items-center flex-wrap">
-        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.12em]">Filed under</span>
-        {post.data.tags.map((tag) => (
-          <span class="font-mono text-[11px] text-text-3 px-2.5 py-1.5 border border-white/[0.12] rounded-[20px]">{tag}</span>
-        ))}
-      </div>
+      <p class="m-0 mt-10 text-[12px] text-text-muted">Tagged: {post.data.tags.join(' · ')}</p>
     )}
   </article>
 
   {seriesPosts.length > 1 && (
-    <section class="max-w-article mx-auto px-8 pt-2 pb-4">
-      <div class="p-[26px] px-7 border border-white/[0.09] rounded-[14px] bg-panel">
-        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.14em]">{post.data.series} — {seriesPosts.length} parts</span>
-        <ol class="list-none m-0 mt-3.5 p-0 flex flex-col gap-2">
-          {seriesPosts.map((p) => (
-            <li class="m-0">
-              {p.id === post.id ? (
-                <span class="font-mono text-[13px] text-accent">Part {p.data.part} · {p.data.title} ←</span>
-              ) : (
-                <a href={`/blog/${p.id}`} class="font-mono text-[13px] text-text-3 no-underline hover:text-accent transition-colors">Part {p.data.part} · {p.data.title}</a>
-              )}
-            </li>
-          ))}
-        </ol>
-        <div class="flex justify-between mt-5 font-mono text-xs">
-          <span>{prevPart && <a href={`/blog/${prevPart.id}`} class="text-accent no-underline">← Part {prevPart.data.part}</a>}</span>
-          <span>{nextPart && <a href={`/blog/${nextPart.id}`} class="text-accent no-underline">Part {nextPart.data.part} →</a>}</span>
-        </div>
-      </div>
+    <section class="mt-14">
+      <h2 class={eyebrow}>Series · {post.data.series} · {seriesPosts.length} parts</h2>
+      <ol class="list-none m-0 p-0 border-t border-rule">
+        {seriesPosts.map((p) => (
+          <li class="border-b border-rule">
+            {p.id === post.id ? (
+              <span class={partRow} aria-current="page">
+                <span class="text-[13px] text-text-muted">{String(p.data.part ?? 0).padStart(2, '0')}</span>
+                <span class={partTitle}>{p.data.title} <span class="font-mono text-[12px] text-text-muted whitespace-nowrap">(this post)</span></span>
+              </span>
+            ) : (
+              <a href={`/blog/${p.id}`} class={`group no-underline ${partRow}`}>
+                <span class="text-[13px] text-text-muted">{String(p.data.part ?? 0).padStart(2, '0')}</span>
+                <span class={`${partTitle} ${rowTitle}`}>{p.data.title}</span>
+              </a>
+            )}
+          </li>
+        ))}
+      </ol>
     </section>
   )}
 
   {related && (
-    <section class="max-w-article mx-auto px-8 pt-6 pb-20">
-      <a href={`/blog/${related.id}`} class="no-underline text-text block p-[26px] px-7 border border-white/[0.09] rounded-[14px] bg-panel transition-colors hover:border-accent/40">
-        <span class="font-mono text-[11px] text-text-faint uppercase tracking-[0.14em]">Related ·</span>
-        <div class="font-semibold text-xl leading-[1.25] mt-2.5">{related.data.title}</div>
-        <div class="text-sm leading-[1.5] text-text-3 mt-1.5">{related.data.description}</div>
-      </a>
+    <section class="mt-14">
+      <h2 class={eyebrow}>{nextPart ? 'Next in series' : 'Related'}</h2>
+      <div class="border-t border-rule">
+        <a href={`/blog/${related.id}`} class="group block py-[18px] border-b border-rule no-underline">
+          <span class="block mb-1.5 text-[12px] text-text-muted">{related.data.category} · {related.data.readingTime}</span>
+          <span class={`block font-serif text-[21px] leading-[1.35] text-text-bright ${rowTitle}`}>{related.data.title}</span>
+        </a>
+      </div>
     </section>
   )}
+
+  <hr class="m-0 mt-14 mb-6 border-0 border-t border-dashed border-rule-dashed" />
+  <p class="m-0 flex flex-wrap justify-between gap-4 text-[13px]">
+    <a href="/blog">← All writing</a>
+    <span class="text-text-muted">Reply: <a href="mailto:jason@jpaladini.com">jason@jpaladini.com</a></span>
+  </p>
 </MainLayout>
 
 <!-- Render mermaid code fences (converted to <pre class="mermaid"> at build time) as diagrams. -->
@@ -115,13 +132,16 @@ const related = nextPart ?? others[0] ?? null;
     startOnLoad: false,
     theme: 'dark',
     securityLevel: 'strict',
-    fontFamily: '"Space Grotesk", ui-sans-serif, system-ui, sans-serif',
+    fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
     themeVariables: {
-      background: '#0c0f13',
-      primaryColor: '#0c0f13',
-      primaryTextColor: '#e6edf0',
-      lineColor: '#3a4a4f',
-      fontFamily: '"Space Grotesk", sans-serif',
+      background: '#1a1a1a',
+      primaryColor: '#262626',
+      primaryTextColor: '#ececec',
+      primaryBorderColor: '#5a5a5a',
+      lineColor: '#9b9b9b',
+      textColor: '#ececec',
+      edgeLabelBackground: '#1a1a1a',
+      fontFamily: '"IBM Plex Mono", monospace',
     },
   });
 
@@ -132,195 +152,169 @@ const related = nextPart ?? others[0] ?? null;
 </script>
 
 <style is:global>
-  /* Dark long-form prose, scoped to .post-body. Inline-styled HTML blocks in
-     the markdown (architecture boxes, the prompt_registry table) override
-     these defaults via their own styles. */
+  /* Long-form prose rendered from markdown, scoped to .post-body: serif body
+     on the article measure, mono for anything code-like or tabular. */
   .post-body {
-    color: #aebbc0;
-    font-size: 17px;
-    line-height: 1.72;
+    font-family: Newsreader, Georgia, serif;
+    font-size: 19px;
+    line-height: 1.65;
+    /* Long URLs and inline code break rather than widen the page. */
+    overflow-wrap: break-word;
+
+    /* Shiki's css-variables theme: one dimmed tone, comments quieter still. */
+    --astro-code-foreground: rgba(240, 240, 240, 0.82);
+    --astro-code-background: transparent;
+    --astro-code-token-comment: #9b9b9b;
   }
 
-  .post-body p {
-    margin: 0 0 22px;
+  .post-body > * {
+    margin: 0;
   }
-
-  /* Lead paragraph */
-  .post-body > p:first-of-type {
-    font-size: 18.5px;
-    line-height: 1.75;
-    color: #cfd8db;
-    margin-bottom: 24px;
+  .post-body > * + * {
+    margin-top: 20px;
   }
 
   .post-body h2 {
-    margin: 42px 0 14px;
-    font-size: 24px;
+    margin-top: 40px;
+    font-size: 26px;
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: #e6edf0;
+    line-height: 1.3;
+    color: #ffffff;
   }
 
   .post-body h3 {
-    margin: 32px 0 12px;
-    font-size: 19px;
+    margin-top: 32px;
+    font-size: 21px;
     font-weight: 600;
-    line-height: 1.25;
-    color: #e6edf0;
+    line-height: 1.35;
+    color: #ffffff;
   }
 
   .post-body ul,
   .post-body ol {
-    margin: 22px 0;
-    padding-left: 1.4rem;
+    padding-left: 24px;
   }
   .post-body ul { list-style: disc; }
   .post-body ol { list-style: decimal; }
-  .post-body li { margin: 0.5rem 0; }
-  .post-body li::marker { color: #6ee7c7; }
-
-  .post-body a {
-    color: #6ee7c7;
-    text-decoration: none;
+  .post-body li + li,
+  .post-body li > ul,
+  .post-body li > ol {
+    margin-top: 8px;
   }
-  .post-body a:hover {
-    color: #8af0d6;
-  }
+  .post-body li::marker { color: #9b9b9b; }
 
   .post-body strong {
     font-weight: 600;
-    color: #e6edf0;
+    color: #ffffff;
   }
   .post-body em { font-style: italic; }
 
-  /* Pull-quote (markdown blockquote) */
+  /* Pull-quote (markdown blockquote): indented italic, no box. */
   .post-body blockquote {
-    margin: 34px 0;
-    padding: 24px 26px;
-    border-left: 3px solid #6ee7c7;
-    background: rgba(110, 231, 199, 0.05);
-    border-radius: 0 10px 10px 0;
+    padding-left: 24px;
+    font-style: italic;
+    color: #d6d6d6;
   }
-  .post-body blockquote p {
-    margin: 0;
-    font-size: 19px;
-    font-weight: 500;
-    line-height: 1.55;
-    color: #e6edf0;
+  .post-body blockquote > * + * {
+    margin-top: 12px;
   }
 
   /* Inline code chip */
   .post-body :not(pre) > code {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 14px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.06);
-    color: #cffaed;
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 15px;
+    font-style: normal;
+    background: #262626;
+    padding: 1px 5px;
+    border-radius: 3px;
   }
 
-  /* Code blocks */
+  /* Code blocks: no box, just hairlines and dimmed mono. */
   .post-body pre {
     margin: 28px 0;
-    padding: 18px 16px;
-    border-radius: 12px;
-    overflow-x: auto;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 12.5px;
-    line-height: 1.7;
-    background: #0c0f13;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #c4d0d4;
+    padding: 20px 0;
+    border-top: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.85;
+    color: rgba(240, 240, 240, 0.82);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
   .post-body pre code {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    background: none;
-    color: inherit;
-    padding: 0;
+    font-family: inherit;
   }
 
-  /* Mermaid diagrams render to SVG; drop the code-block chrome. */
+  /* Mermaid diagrams render to SVG; drop the code-block rules. */
   .post-body pre.mermaid {
-    background: transparent;
-    border: none;
     padding: 0;
+    border: 0;
     text-align: center;
   }
 
-  /* Tables */
+  /* Tables: tabular data sits in mono, ruled with hairlines. */
   .post-body table {
     width: 100%;
     margin: 28px 0;
     border-collapse: collapse;
-    font-size: 14.5px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.6;
   }
   .post-body th,
   .post-body td {
     text-align: left;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px 10px 0;
+    border-bottom: 1px solid #333333;
     vertical-align: top;
-    color: #aebbc0;
+  }
+  .post-body th:last-child,
+  .post-body td:last-child {
+    padding-right: 0;
   }
   .post-body th {
-    background: rgba(255, 255, 255, 0.03);
-    font-weight: 600;
-    color: #e6edf0;
+    border-top: 1px solid #333333;
+    font-weight: 400;
+    color: #9b9b9b;
   }
-
-  /* Image placeholders (swap these out for real screenshots) */
-  .post-body figure.img-placeholder {
-    margin: 28px 0;
-    padding: 2rem 1.25rem;
-    border: 1px solid rgba(110, 231, 199, 0.18);
-    border-radius: 12px;
-    background: repeating-linear-gradient(
-      135deg,
-      rgba(110, 231, 199, 0.07),
-      rgba(110, 231, 199, 0.07) 8px,
-      transparent 8px,
-      transparent 16px
-    );
-    text-align: center;
+  .post-body td code {
+    font-size: 12px;
   }
-  .post-body figure.img-placeholder span {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 0.78rem;
-    color: #6a7b81;
+  @media (max-width: 640px) {
+    .post-body table {
+      display: block;
+      overflow-x: auto;
+    }
   }
 
   /* Horizontal rule */
   .post-body hr {
     margin: 40px 0;
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    border-top: 1px dashed #3a3a3a;
   }
 
   /* Post images (screenshots) */
   .post-body img {
     display: block;
     max-width: 100%;
-    margin: 28px auto 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 8px auto 0;
+    border: 1px solid #333333;
+    border-radius: 3px;
   }
 
   /* Collapsed text alternative for a rendered diagram */
-  .post-body details.diagram-note {
-    margin: -14px 0 28px;
-  }
   .post-body details.diagram-note summary {
     cursor: pointer;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 11.5px;
-    color: #6a7b81;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: #9b9b9b;
   }
   .post-body details.diagram-note p {
     margin: 10px 0 0;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.6;
-    color: #8a989e;
+    color: #d6d6d6;
   }
 </style>

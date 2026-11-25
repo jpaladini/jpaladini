@@ -52,13 +52,15 @@ const projects = [
   },
 ];
 
-const techBars = [
-  { label: 'Streamlit', count: '6 projects', width: '100%', opacity: 1 },
-  { label: 'Python', count: '5 projects', width: '83%', opacity: 1 },
-  { label: 'Data Engineering', count: '3 projects', width: '50%', opacity: 0.6 },
-  { label: 'Power BI', count: '2 projects', width: '33%', opacity: 0.6 },
-  { label: 'Snowflake · dbt · BI', count: '1 each', width: '18%', opacity: 0.4 },
+const techStack = [
+  { label: 'Streamlit', count: '6 projects' },
+  { label: 'Python', count: '5 projects' },
+  { label: 'Data Engineering', count: '3 projects' },
+  { label: 'Power BI', count: '2 projects' },
+  { label: 'Snowflake · dbt · BI', count: '1 each' },
 ];
+
+const sectionTitle = 'm-0 font-serif font-semibold text-[28px] text-text-bright';
 ---
 
 <MainLayout
@@ -66,55 +68,51 @@ const techBars = [
   description="Data engineering tools and analytics applications by Jason Paladini, built with Streamlit and deployed live."
   active="projects"
 >
-  <!-- Header -->
-  <header class="border-b border-white/[0.07] grid-texture">
-    <div class="max-w-content mx-auto px-8 pt-16 pb-[52px]">
-      <div class="font-mono text-xs text-text-faint mb-[18px]">
-        <a href="/" class="text-accent no-underline">~/</a> / projects
-      </div>
-      <h1 class="m-0 font-bold text-[clamp(40px,6vw,64px)] leading-[1.0] tracking-[-0.03em]">Projects</h1>
-      <p class="mt-5 max-w-[560px] text-[17px] leading-[1.55] text-text-3">
-        Data engineering tools and analytics applications, built with Streamlit and deployed live. Each one is open to try.
-      </p>
-    </div>
-  </header>
+  <dl class="grid grid-cols-[88px_minmax(0,1fr)] gap-x-4 gap-y-0.5 m-0 mb-7 text-[13px]">
+    <dt class="text-text-muted">Index:</dt>
+    <dd class="m-0">Projects</dd>
+    <dt class="text-text-muted">Count:</dt>
+    <dd class="m-0">{projects.length}</dd>
+  </dl>
+  <hr class="m-0 mb-12 border-0 border-t border-dashed border-rule-dashed" />
+
+  <h1 class="m-0 mb-7 font-serif font-normal text-[clamp(36px,9vw,46px)] leading-[1.12] tracking-[-0.01em] text-text-bright">Projects</h1>
+  <p class="m-0 mb-16 font-serif text-[20px] leading-[1.6]">
+    Data engineering tools and analytics applications, built with Streamlit and deployed live. Each one is open to try.
+  </p>
 
   <!-- Project list -->
-  <section class="max-w-content mx-auto px-8 pt-16 pb-6 flex flex-col gap-5">
-    {projects.map((p) => (
-      <a href={p.url} target="_blank" rel="noopener" class="no-underline text-text grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-[30px] p-[30px] border border-white/[0.09] rounded-2xl bg-panel items-center transition-colors hover:border-accent/40 hover:bg-panel-hover">
-        <div class="stripe-placeholder aspect-[4/3] rounded-[10px] flex items-center justify-center font-mono text-[10px] leading-[1.4] text-text-faint text-center p-2.5">app screenshot</div>
-        <div>
-          <div class="flex justify-between items-baseline gap-3">
-            <h2 class="m-0 font-semibold text-2xl leading-[1.1]">{p.title}</h2>
-            <span class="font-mono font-medium text-xs text-accent flex-none">{p.num} ↗</span>
-          </div>
-          <p class="mt-2.5 mb-3.5 text-[14.5px] leading-[1.55] text-text-3 max-w-[640px]">{p.description}</p>
-          <div class="flex flex-wrap gap-x-3.5 gap-y-1.5 mb-3.5 text-[13px] leading-[1.4] text-text-2">
-            {p.features.map((f) => (<span>· {f}</span>))}
-          </div>
-          <div class="flex flex-wrap gap-1.5 font-mono text-[11px] font-medium text-text-dim">
-            {p.tags.map((t) => (
-              <span class="px-[9px] py-[5px] border border-white/10 rounded-[5px]">{t}</span>
-            ))}
-          </div>
-        </div>
-      </a>
-    ))}
+  <section class="mb-20">
+    <ol class="list-none m-0 p-0 border-t border-rule">
+      {projects.map((p) => (
+        <li class="border-b border-rule">
+          <a href={p.url} target="_blank" rel="noopener" class="group grid grid-cols-[36px_minmax(0,1fr)] gap-3 py-5 no-underline">
+            <span class="text-[13px] text-text-muted">{p.num}</span>
+            <span class="flex flex-col gap-2">
+              <span class="font-serif text-[20px] leading-[1.35] text-text-bright decoration-text underline-offset-[3px] group-hover:underline">{p.title}</span>
+              <span class="font-serif text-[17px] leading-[1.55] text-text">{p.description}</span>
+              <span class="text-[12px] text-text">{p.features.join(' · ')}</span>
+              <span class="text-[12px] text-text-muted">{p.tags.join(' · ')}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
   </section>
 
   <!-- Tech stack summary -->
-  <section class="max-w-content mx-auto px-8 pt-16 pb-6">
-    <h2 class="mt-0 mb-2 font-bold text-[26px] leading-[1.1] tracking-[-0.01em]">Technology stack</h2>
-    <p class="mt-0 mb-7 text-[15px] leading-[1.5] text-text-3">Across these projects, by frequency.</p>
-    <div class="border border-white/[0.09] rounded-2xl bg-panel p-7 flex flex-col gap-4">
-      {techBars.map((bar) => (
-        <div class="grid grid-cols-[110px_1fr_70px] sm:grid-cols-[160px_1fr_90px] gap-3.5 items-center">
-          <span class="font-mono text-[13px] text-text-2">{bar.label}</span>
-          <div class="h-3 rounded-md bg-accent" style={`width:${bar.width};opacity:${bar.opacity}`}></div>
-          <span class="font-mono text-xs text-text-faint text-right">{bar.count}</span>
-        </div>
-      ))}
+  <section>
+    <div class="flex justify-between items-baseline gap-4 mb-4">
+      <h2 class={sectionTitle}>Technology stack</h2>
+      <span class="text-[13px] text-text-muted">By frequency</span>
     </div>
+    <ul class="list-none m-0 p-0 border-t border-rule text-[13px]">
+      {techStack.map((t) => (
+        <li class="grid grid-cols-[120px_minmax(0,1fr)] gap-4 py-3 border-b border-rule">
+          <span class="text-text-muted">{t.count}</span>
+          <span>{t.label}</span>
+        </li>
+      ))}
+    </ul>
   </section>
 </MainLayout>

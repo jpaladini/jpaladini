@@ -41,6 +41,9 @@ export default defineConfig({
   integrations: [tailwind()],
   markdown: {
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
+    // Token colours come from --astro-code-* custom properties set in the
+    // post template, so code blocks follow the site palette.
+    shikiConfig: { theme: 'css-variables' },
     rehypePlugins: [rehypeMermaid],
   },
 });
