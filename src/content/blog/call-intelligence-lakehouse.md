@@ -24,13 +24,13 @@ Customer-service calls are one of the richest, least-used datasets a company has
 
 The backbone is a standard Bronze/Silver/Gold layout, which matters more than it sounds — it's what keeps a messy, multi-step AI pipeline debuggable.
 
-<div style="margin:28px 0;display:flex;flex-direction:column;gap:10px">
-  <div style="padding:16px 18px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:#0c0f13"><div style="font:600 15px/1.2 'Space Grotesk',sans-serif;color:#e6edf0">Bronze</div><div style="font:400 13.5px/1.5 'JetBrains Mono',monospace;color:#7d8e94;margin-top:4px">raw recordings + call metadata, landed untouched</div></div>
-  <div style="text-align:center;color:#3a4a4f;font:600 13px/1 'JetBrains Mono',monospace">↓</div>
-  <div style="padding:16px 18px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:#0c0f13"><div style="font:600 15px/1.2 'Space Grotesk',sans-serif;color:#e6edf0">Silver</div><div style="font:400 13.5px/1.5 'JetBrains Mono',monospace;color:#7d8e94;margin-top:4px">transcription → LLM analysis → embeddings, each a tracked step</div></div>
-  <div style="text-align:center;color:#3a4a4f;font:600 13px/1 'JetBrains Mono',monospace">↓</div>
-  <div style="padding:16px 18px;border:1px solid #6ee7c7;border-radius:10px;background:rgba(110,231,199,.07)"><div style="font:600 15px/1.2 'Space Grotesk',sans-serif;color:#cffaed">Gold + RAG</div><div style="font:400 13.5px/1.5 'JetBrains Mono',monospace;color:#7fd9c2;margin-top:4px">governed serving tables + dual-index retrieval for cited answers</div></div>
-</div>
+```text
+bronze       raw recordings + call metadata, landed untouched
+   ↓
+silver       transcription → LLM analysis → embeddings, each a tracked step
+   ↓
+gold + rag   governed serving tables + dual-index retrieval for cited answers
+```
 
 Because every transformation is its own layer, when a transcript looks wrong I can walk back exactly one step at a time instead of re-running an opaque end-to-end job.
 
